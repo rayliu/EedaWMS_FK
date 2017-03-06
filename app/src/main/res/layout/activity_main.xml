@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.eeda123.wms.eedawms.MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="4"
+            android:weightSum="1">
+
+
+            <TextView
+                android:text="当前操作人:"
+                android:layout_width="94dp"
+                android:layout_height="match_parent"
+                android:id="@+id/textView9"
+                android:paddingLeft="10dip"
+                android:paddingTop="10dip" />
+
+            <EditText
+                android:id="@+id/editText3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Ray Liu"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <Button
+                android:id="@+id/gateInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/warehouse_in"
+                android:paddingTop="45dip"
+                android:text="入库" />
+
+            <Button
+                android:id="@+id/cancelGateInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/warehouse_in_cancel"
+                android:paddingTop="47dip"
+                android:text="入库取消" />
+
+            <Button
+                android:id="@+id/returnGateInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/warehouse_in"
+                android:paddingTop="45dip"
+                android:text="退货入库\n（重打标签）" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <Button
+                android:id="@+id/gateOutBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/warehouse_out"
+                android:paddingTop="45dip"
+                android:text="出库" />
+
+            <Button
+                android:id="@+id/shiftOutBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/cargo_swap"
+                android:paddingTop="45dip"
+                android:text="移库(出)" />
+
+            <Button
+                android:id="@+id/shiftInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/cargo_swap"
+                android:paddingTop="45dip"
+                android:text="移库(入)" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <Button
+                android:id="@+id/invCheckBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/check_list"
+                android:paddingTop="45dip"
+                android:text="盘点" />
+
+            <Button
+                android:id="@+id/exportBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/export_xls"
+                android:paddingTop="45dip"
+                android:text="数据导出"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
