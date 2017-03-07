@@ -22,8 +22,14 @@ public class DbHelper extends SQLiteOpenHelper {
         //String sql = "create table gate_in(id INTEGER PRIMARY KEY AUTOINCREMENT, qr_code varchar(200), part_no varchar(60), quantity int);";
         String sql = "CREATE TABLE `gate_in` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
                 " `part_no`  varchar(255) NULL , `quantity`  int(20) NULL , `shelves`  varchar(255) NULL ," +
-                "`creator`  varchar(255) NULL  ,`create_time`  datetime NULL) ";
+                "`creator`  varchar(255) NULL  ,`create_time`  datetime NULL,return_flag varchar(2) default 'N',move_flag varchar(2) default 'N')) ";
 
+//         String sql = "CREATE TABLE `gate_out` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ,
+//        `part_no`  varchar(255) NULL , `quantity`  int(20) NULL , `shelves`  varchar(255) NULL ,
+//        `creator`  varchar(255) NULL  ,`create_time`  datetime NULL ,move_flag varchar(2) default 'N')";
+
+       // CREATE TABLE `inv_check_order` ( 	`id` INTEGER PRIMARY KEY AUTOINCREMENT,   `order_no` VARCHAR (255) NULL, 	`qr_code` VARCHAR (255) NULL, 	`part_no` VARCHAR (255) NULL, 	`quantity` INT (20) NULL, 	`check_quantity` INT (20) NULL,
+        	//`shelves` VARCHAR (255) NULL, 	`creator` VARCHAR (255) NULL, 	`create_time` datetime NULL )
         db.execSQL(sql);
     }
 

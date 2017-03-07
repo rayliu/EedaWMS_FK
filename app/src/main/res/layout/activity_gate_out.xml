@@ -31,6 +31,35 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:text="货架号:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/shelfTextView"
+                        android:layout_weight="0.35" />
+
+                    <EditText
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        android:id="@+id/shelfEditText"
+                        android:layout_weight="1.18" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -94,36 +123,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
                     android:ems="10"
-                    android:id="@+id/editText2"
+                    android:id="@+id/quantity"
                     android:layout_weight="0.60" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="货架号:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/shelfTextView"
-                    android:layout_weight="0.35" />
-
-                <EditText
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:ems="10"
-                    android:id="@+id/shelfEditText"
-                    android:layout_weight="1.18" />
-
             </LinearLayout>
         </LinearLayout>
 
@@ -140,6 +141,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/comfirmBtn" />
+
+        <Button
+            android:text="下一个货架"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nextShelfBtn"
+            android:layout_marginTop="50dip"/>
 
     </LinearLayout>
 </RelativeLayout>

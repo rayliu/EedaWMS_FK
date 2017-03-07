@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mShiftOutButton = null;
     private Button mShiftInButton = null;
     private Button mInvCheckButton = null;
+    private Button mInvReCheckButton = null;
     private Button mExportButton = null;
     private EditText userNameText = null;
 
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mInvCheckButton = (Button) findViewById(R.id.invCheckBtn);
         mInvCheckButton.setOnClickListener(this);
+
+        mInvReCheckButton = (Button) findViewById(R.id.invReCheckBtn);
+        mInvReCheckButton.setOnClickListener(this);
     }
 
     @Override
@@ -99,19 +103,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(gateInCancelIntent);
                 break;
             case R.id.returnGateInBtn:
-                startActivity(new Intent(this, GateInReturnActivity.class));
+                Intent gateInReturnIntent = new Intent(getApplicationContext(),
+                        GateInReturnActivity.class);
+                gateInReturnIntent.putExtra(GateInReturnActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(gateInReturnIntent);
                 break;
             case R.id.gateOutBtn:
-                startActivity(new Intent(this, GateOutActivity.class));
+                Intent gateOutIntent = new Intent(getApplicationContext(),
+                        GateOutActivity.class);
+                gateOutIntent.putExtra(GateOutActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(gateOutIntent);
                 break;
             case R.id.shiftOutBtn:
-                startActivity(new Intent(this, ShiftOutActivity.class));
+                Intent shiftOutIntent = new Intent(getApplicationContext(),
+                        ShiftOutActivity.class);
+                shiftOutIntent.putExtra(ShiftOutActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(shiftOutIntent);
                 break;
             case R.id.shiftInBtn:
-                startActivity(new Intent(this, ShiftInActivity.class));
+                Intent shiftInIntent = new Intent(getApplicationContext(),
+                        ShiftInActivity.class);
+                shiftInIntent.putExtra(ShiftInActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(shiftInIntent);
                 break;
             case R.id.invCheckBtn:
-                startActivity(new Intent(this, InvCheckActivity.class));
+                Intent invCheckIntent = new Intent(getApplicationContext(),
+                        InvCheckActivity.class);
+                invCheckIntent.putExtra(InvCheckActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(invCheckIntent);
+                break;
+            case R.id.invReCheckBtn:
+                Intent invReCheckIntent = new Intent(getApplicationContext(),
+                        InvReCheckActivity.class);
+                invReCheckIntent.putExtra(InvReCheckActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(invReCheckIntent);
                 break;
             case R.id.exportBtn:
                 ExportDatabaseCSVTask exportDatabaseCSVTask = new ExportDatabaseCSVTask();

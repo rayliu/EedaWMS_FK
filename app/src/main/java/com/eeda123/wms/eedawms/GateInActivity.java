@@ -110,6 +110,8 @@ public class GateInActivity extends AppCompatActivity {
 
         qrCodeEditText.requestFocus();
         mFocusedEditText = qrCodeEditText;
+
+        Toast.makeText(this, "入库成功!", Toast.LENGTH_SHORT).show();
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {

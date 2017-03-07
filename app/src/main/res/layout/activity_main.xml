@@ -12,7 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginTop="10dp">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -127,6 +129,15 @@
                 android:text="盘点" />
 
             <Button
+                android:id="@+id/invReCheckBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/check_list"
+                android:paddingTop="45dip"
+                android:text="盘点复核" />
+
+            <Button
                 android:id="@+id/exportBtn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -135,12 +146,6 @@
                 android:paddingTop="45dip"
                 android:text="数据导出"
                 android:textSize="14sp" />
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
 
         </LinearLayout>
     </LinearLayout>
