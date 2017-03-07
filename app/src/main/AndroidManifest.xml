@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,19 +19,26 @@
             </intent-filter>
         </activity>
         <activity android:name=".GateInActivity"
-            android:label="入库" />
+            android:label="入库"
+            android:screenOrientation="portrait" />
         <activity android:name=".GateInCancelActivity"
-            android:label="入库取消" />
+            android:label="入库取消"
+            android:screenOrientation="portrait" />
         <activity android:name=".GateInReturnActivity"
-            android:label="退货入库" />
+            android:label="退货入库"
+            android:screenOrientation="portrait" />
         <activity android:name=".GateOutActivity"
-            android:label="出库" />
+            android:label="出库"
+            android:screenOrientation="portrait" />
         <activity android:name=".ShiftOutActivity"
-            android:label="移库(出)" />
+            android:label="移库(出)"
+            android:screenOrientation="portrait" />
         <activity android:name=".ShiftInActivity"
-            android:label="移库(入)" />
+            android:label="移库(入)"
+            android:screenOrientation="portrait" />
         <activity android:name=".InvCheckActivity"
-            android:label="盘点" />
+            android:label="盘点"
+            android:screenOrientation="portrait" />
 
     </application>
 
