@@ -15,8 +15,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
 import com.eeda123.wms.eedawms.model.DbHelper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +30,9 @@ public class GateInActivity extends AppCompatActivity {
     private EditText partNoEditText;
     private EditText quantityEditText;
     private EditText shelfEditText;
+    public static String USER_NAME;
 
-    private EditText mFocusedEditText=null;
+    private EditText mFocusedEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,31 +65,51 @@ public class GateInActivity extends AppCompatActivity {
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
 
-        mFocusedEditText = qrCodeEditText;
+        mFocusedEditText = shelfEditText;
         //qrCodeEditText.setOnFocusChangeListener(focusListener);
+
         findViewById(R.id.comfirmBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unregisterReceiver(mBrReceiver);
+                //unregisterReceiver(mBrReceiver);
                 //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
 
                 DbHelper database_helper = new DbHelper(GateInActivity.this);
                 SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
 
-                db.execSQL("insert into gate_in(qr_code, part_no, quantity) values ('qrcode_test', 'part_no', 550);");
-                finish();
+                String qrCode = qrCodeEditText.getText().toString();
+                String part_no = partNoEditText.getText().toString();
+                String quantity = quantityEditText.getText().toString();
+                String shelf = shelfEditText.getText().toString();
+                String userName = getIntent().getStringExtra(USER_NAME);
+
+                db.execSQL("insert into gate_in(qr_code, part_no, quantity, shelves,creator,create_time)" +
+                        " values ('"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
+                //unregisterReceiver(mBrReceiver);
+                //finish();
+                clearDate();
+                System.out.println("入库成功");
             }
         });
 
-//        findViewById(R.id.cancelBtn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                unregisterReceiver(mBrReceiver);
-//                //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
-//
-//                finish();
-//            }
-//        });
+        findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shelfEditText.setText("");
+                shelfEditText.requestFocus();
+                mFocusedEditText = shelfEditText;
+            }
+        });
+    };
+
+
+    public void clearDate(){
+        qrCodeEditText.setText("");
+        partNoEditText.setText("");
+        quantityEditText.setText("");
+
+        qrCodeEditText.requestFocus();
+        mFocusedEditText = qrCodeEditText;
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
@@ -108,29 +132,29 @@ public class GateInActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    System.out.println("####qr######:"+datat);
                     mFocusedEditText.setText(datat);
 
-                    int mIndex = 0;
-                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                    while(m.find()) {
-
-                        System.out.println("####m str ######:"+m.group());
-                        if(mIndex == 4)
-                            partNoEditText.setText(m.group());
-                        if(mIndex == 6)
-                            quantityEditText.setText(m.group());
-
-                        mIndex++;
+                    if(qrCodeEditText.hasFocus()) {
+                        qrCodeEditText.setText(datat);
+                        int mIndex = 0;
+                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
+                        while(m.find()) {
+                            System.out.println("####qr######:"+datat);
+                            System.out.println("####m str ######:"+m.group());
+                            if(mIndex == 4)
+                                partNoEditText.setText(m.group());
+                            if(mIndex == 6)
+                                quantityEditText.setText(m.group());
+                            mIndex++;
+                        }
                     }
 
-                    if(qrCodeEditText.hasFocus()){
-                        shelfEditText.requestFocus();
-                        mFocusedEditText = shelfEditText;
+                    if(shelfEditText.hasFocus()) {
+                        qrCodeEditText.requestFocus();
+                        mFocusedEditText = qrCodeEditText;
                     }
-                    //showToast(datat);
-                }
-            }
+                 }
+            };
         };
         IntentFilter filter = new IntentFilter(getstr);
         registerReceiver(mBrReceiver, filter);

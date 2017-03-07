@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.eeda123.wms.eedawms.model.DbHelper;
@@ -37,14 +38,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mShiftInButton = null;
     private Button mInvCheckButton = null;
     private Button mExportButton = null;
+    private EditText userNameText = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        userNameText = (EditText)findViewById(R.id.userName);
         addListeners();
+    }
+
+    public static String getDate(){
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String date = sDateFormat.format(new java.util.Date());
+        return date;
     }
 
     protected void addListeners() {
@@ -77,10 +85,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.gateInBtn:
-                startActivity(new Intent(this, GateInActivity.class));
+                Intent gateInIntent = new Intent(getApplicationContext(),
+                        GateInActivity.class);
+                gateInIntent.putExtra(GateInActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(gateInIntent);
                 break;
             case R.id.cancelGateInBtn:
-                startActivity(new Intent(this, GateInCancelActivity.class));
+                Intent gateInCancelIntent = new Intent(getApplicationContext(),
+                        GateInCancelActivity.class);
+                gateInCancelIntent.putExtra(GateInCancelActivity.USER_NAME, userNameText
+                        .getText().toString());
+                startActivity(gateInCancelIntent);
                 break;
             case R.id.returnGateInBtn:
                 startActivity(new Intent(this, GateInReturnActivity.class));

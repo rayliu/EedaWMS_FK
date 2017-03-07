@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
                     android:ems="10"
-                    android:id="@+id/editText2"
+                    android:id="@+id/quantity"
                     android:layout_weight="0.60" />
             </LinearLayout>
         </LinearLayout>

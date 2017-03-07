@@ -19,7 +19,11 @@ public class DbHelper extends SQLiteOpenHelper {
     //该函数在数据库第一次被建立时调用
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "create table gate_in(id INTEGER PRIMARY KEY AUTOINCREMENT, qr_code varchar(200), part_no varchar(60), quantity int);";
+        //String sql = "create table gate_in(id INTEGER PRIMARY KEY AUTOINCREMENT, qr_code varchar(200), part_no varchar(60), quantity int);";
+        String sql = "CREATE TABLE `gate_in` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
+                " `part_no`  varchar(255) NULL , `quantity`  int(20) NULL , `shelves`  varchar(255) NULL ," +
+                "`creator`  varchar(255) NULL  ,`create_time`  datetime NULL) ";
+
         db.execSQL(sql);
     }
 
