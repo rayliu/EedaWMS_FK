@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -73,18 +74,25 @@ public class GateOutActivity extends AppCompatActivity {
                 String shelf = shelfEditText.getText().toString();
                 String userName = getIntent().getStringExtra(USER_NAME);
 
+                Cursor cursor = db.rawQuery("select * from gate_out where qr_code = '"+qrCode+"'", null);
+                while (cursor.moveToNext()) {
+                    Toast.makeText(getApplicationContext(), "此货品不能二次出库!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 db.execSQL("insert into gate_out(qr_code, part_no, quantity, shelves,creator,create_time)" +
                         " values ('"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
                 //unregisterReceiver(mBrReceiver);
                 //finish();
                 clearDate();
-                System.out.println("入库成功");
+                Toast.makeText(getApplicationContext(), "出库成功!", Toast.LENGTH_SHORT).show();
             }
         });
 
         findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearDate();
                 shelfEditText.setText("");
                 shelfEditText.requestFocus();
                 mFocusedEditText = shelfEditText;
@@ -99,8 +107,6 @@ public class GateOutActivity extends AppCompatActivity {
 
         qrCodeEditText.requestFocus();
         mFocusedEditText = qrCodeEditText;
-
-        Toast.makeText(this, "出库成功!", Toast.LENGTH_SHORT).show();
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {

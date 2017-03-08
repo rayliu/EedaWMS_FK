@@ -3,6 +3,7 @@ package com.eeda123.wms.eedawms;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,11 @@ import android.widget.Toast;
 import com.eeda123.wms.eedawms.model.DbHelper;
 import com.eeda123.wms.eedawms.model.GateInDao;
 import com.eeda123.wms.eedawms.model.GateInRecord;
+import com.eeda123.wms.eedawms.model.GateOutDao;
+import com.eeda123.wms.eedawms.model.InvCheckOrderDao;
 import com.opencsv.CSVWriter;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,7 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
@@ -165,9 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // to write process
         protected Boolean doInBackground(final String... args) {
-
             boolean success = false;
-
             String currentDateString = new SimpleDateFormat(Constants.SimpleDtFrmt_ddMMyyyy_HHmmss).format(new Date());
 
             File dbFile = getDatabasePath(DbHelper.DB_NAME);
@@ -187,58 +193,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     exportDir.mkdirs();
                 }
                 try {
-                    GateInDao gateInDao=new GateInDao(MainActivity.this);
-                    ArrayList<HashMap<String, ?>> listdata = gateInDao.getList();
-
-
-                    String lob = null;
-                    for (int index = 0; index < listdata.size();) {
-                        HashMap<String, ?> gateInRecord = listdata.get(index);
-                        lob = (String)gateInRecord.get("qr_code");
-                        break;
-                    }
-//                    if (Constants.Common.OCEAN_LOB.equals(lob)) {
-//
-//                        file = new File(exportDir, Constants.FileNm.FILE_OFS + currentDateString + ".csv");
-//                    } else {
-//                        file = new File(exportDir, Constants.FileNm.FILE_AFS + currentDateString + ".csv");
-//                    }
-                    File file = new File(exportDir,  "入库记录_"+currentDateString + ".csv");
-                    file.createNewFile();
-                    CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
-
-
-                    // this is the Column of the table and same for Header of CSV
-                    // file
-//                    if (Constants.Common.OCEAN_LOB.equals(lob)) {
-//                        csvWrite.writeNext(Constants.FileNm.CSV_O_HEADER);
-//                    }else{
-//                        csvWrite.writeNext(Constants.FileNm.CSV_A_HEADER);
-//                    }
-                    String arrStr1[] = { "SR.No", "CUTSOMER NAME", "PROSPECT", "PORT OF LOAD", "PORT OF DISCHARGE" };
-                    csvWrite.writeNext(arrStr1);
-
-                    if (listdata.size() > 0) {
-                        for (int index = 0; index < listdata.size(); index++) {
-                            HashMap<String, ?> sa = listdata.get(index);
-                            String pol;
-                            String pod;
-//                            if (Constants.Common.OCEAN_LOB.equals(sa.getLob())) {
-//                                pol = sa.getPortOfLoadingOENm();
-//                                pod = sa.getPortOfDischargeOENm();
-//                            } else {
-//                                pol = sa.getAirportOfLoadNm();
-//                                pod = sa.getAirportOfDischargeNm();
-//                            }
-                            int srNo = index;
-                            String arrStr[] = { String.valueOf(sa.get("id")), String.valueOf(sa.get("qr_code")),
-                                    String.valueOf(sa.get("part_no")), String.valueOf(sa.get("quantity")) };
-                            csvWrite.writeNext(arrStr);
+                    List<String> list = new ArrayList<String>();
+                    list.add("入库记录");
+                    list.add("出库记录");
+                    list.add("盘点单");
+                    for(String order:list){
+                        GateInDao gateInDao = new GateInDao(MainActivity.this);
+                        GateOutDao gateOutDao = new GateOutDao(MainActivity.this);
+                        InvCheckOrderDao invCheckDao = new InvCheckOrderDao(MainActivity.this);
+                        ArrayList<HashMap<String, ?>> listdata = null;
+                        System.out.println("####baishi######:"+order);
+                        if("入库记录".equals(order)){
+                            listdata = gateInDao.getList();
+                        }else if("出库记录".equals(order)){
+                            listdata = gateOutDao.getList();
+                        }else if("盘点单".equals(order)){
+                            listdata = invCheckDao.getList();
                         }
-                        success = true;
+
+                        File file = new File(exportDir,  order+"_"+currentDateString + ".csv");
+                        file.createNewFile();
+                        CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+                        if (listdata.size() > 0) {
+                            for (int index = 0; index < listdata.size(); index++) {
+                                HashMap<String, ?> sa = listdata.get(index);
+                                if(index == 0){
+                                    String data = (sa.keySet().toString()).substring(1,(sa.keySet().toString()).length()-1);
+                                    String dataArray[] = data.split(",");
+                                    csvWrite.writeNext(dataArray);
+                                }
+
+                                String arrStr[] = new String[sa.size()];
+                                int i = 0;
+                                for(Map.Entry<String, ?> m : sa.entrySet()){
+                                    arrStr[i] =(String) m.getValue();
+                                    i++;
+                                }
+                                csvWrite.writeNext(arrStr);
+                            }
+                            success = true;
+                        }
+                        csvWrite.close();
                     }
-                    csvWrite.close();
                     Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir, Toast.LENGTH_LONG).show();
+                    DbHelper database_helper = new DbHelper(MainActivity.this);
+                    SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+                    db.execSQL("delete from gate_in ");
+                    db.execSQL("delete from gate_out ");
+                    db.execSQL("delete from inv_check_order ");
+                    db.close();
                 } catch (IOException e) {
                     Log.e("MainActivity", e.getMessage(), e);
                     return success;

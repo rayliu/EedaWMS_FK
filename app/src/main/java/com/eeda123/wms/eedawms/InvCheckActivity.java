@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,11 +77,19 @@ public class InvCheckActivity extends AppCompatActivity {
                 String shelf = shelfEditText.getText().toString();
                 String userName = getIntent().getStringExtra(USER_NAME);
 
+                Cursor cursor = db.rawQuery("select * from inv_check_order where qr_code = '"+qrCode+"'", null);
+                while (cursor.moveToNext()) {
+                    Toast.makeText(getApplicationContext(), "此货品已重复盘点!", Toast.LENGTH_LONG).show();
+                    clearDate();
+                    return;
+                }
+
                 db.execSQL("insert into inv_check_order(order_no,qr_code, part_no, quantity, shelves,creator,create_time)" +
                         " values ('"+order_no+"','"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
                 //unregisterReceiver(mBrReceiver);
                 //finish();
                 clearDate();
+                Toast.makeText(getApplicationContext(), "确认成功!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -100,8 +109,6 @@ public class InvCheckActivity extends AppCompatActivity {
 
         qrCodeEditText.requestFocus();
         mFocusedEditText = qrCodeEditText;
-
-        Toast.makeText(this, "确认成功!", Toast.LENGTH_SHORT).show();
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {

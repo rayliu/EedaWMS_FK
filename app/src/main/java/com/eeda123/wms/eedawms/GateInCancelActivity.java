@@ -75,7 +75,7 @@ public class GateInCancelActivity extends AppCompatActivity {
         findViewById(R.id.comfirmBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unregisterReceiver(mBrReceiver);
+                //unregisterReceiver(mBrReceiver);
                 //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
 
                 DbHelper database_helper = new DbHelper(GateInCancelActivity.this);
@@ -83,8 +83,14 @@ public class GateInCancelActivity extends AppCompatActivity {
 
                 String qrCode = qrCodeEditText.getText().toString();
 
+                Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
+                while (!cursor.moveToNext()) {
+                    Toast.makeText(getApplicationContext(), "库存中不存在此货品!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 db.execSQL("delete from gate_in where qr_code = '"+qrCode+"'; ");
-               // finish();
+                Toast.makeText(getApplicationContext(), "取消成功!", Toast.LENGTH_SHORT).show();
                 clearDate();
             }
         });
@@ -98,8 +104,6 @@ public class GateInCancelActivity extends AppCompatActivity {
 
         qrCodeEditText.requestFocus();
         mFocusedEditText = qrCodeEditText;
-
-        Toast.makeText(this, "取消成功!", Toast.LENGTH_SHORT).show();
     }
 
     public void getsystemscandata() {
@@ -130,7 +134,6 @@ public class GateInCancelActivity extends AppCompatActivity {
                         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
                         Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+datat+"'", null);
                         while (cursor.moveToNext()) {
-                            int id = cursor.getInt(0); //获取第一列的值,第一列的索引从0开始
                             String shelves  = cursor.getString(4);//获取第三列的值
                             shelfEditText.setText(shelves);
                         }

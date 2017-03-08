@@ -11,16 +11,16 @@ import java.util.HashMap;
  * Created by a13570610691 on 2017/3/2.
  */
 
-public class GateInDao {
+public class InvCheckOrderDao {
     private DbHelper dbHelper;
 
-    public GateInDao(Context context){
+    public InvCheckOrderDao(Context context){
         dbHelper=new DbHelper(context);
     }
 
     public ArrayList<HashMap<String, ?>> getList(){
         SQLiteDatabase db=dbHelper.getReadableDatabase();
-        String selectQuery="select * from gate_in";
+        String selectQuery="select * from inv_check_order";
         ArrayList<HashMap<String,?>> list=new ArrayList<HashMap<String, ?>>();
         Cursor cursor=db.rawQuery(selectQuery,null);
         if(cursor.moveToFirst()){

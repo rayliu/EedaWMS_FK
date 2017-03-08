@@ -72,8 +72,6 @@ public class GateInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //unregisterReceiver(mBrReceiver);
-                //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
-
                 DbHelper database_helper = new DbHelper(GateInActivity.this);
                 SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
 
@@ -83,18 +81,25 @@ public class GateInActivity extends AppCompatActivity {
                 String shelf = shelfEditText.getText().toString();
                 String userName = getIntent().getStringExtra(USER_NAME);
 
+                Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
+                while (cursor.moveToNext()) {
+                    Toast.makeText(getApplicationContext(), "库存中已存在此货品!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 db.execSQL("insert into gate_in(qr_code, part_no, quantity, shelves,creator,create_time)" +
                         " values ('"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
                 //unregisterReceiver(mBrReceiver);
                 //finish();
                 clearDate();
-                System.out.println("入库成功");
+                Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_SHORT).show();
             }
         });
 
         findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearDate();
                 shelfEditText.setText("");
                 shelfEditText.requestFocus();
                 mFocusedEditText = shelfEditText;
@@ -110,8 +115,6 @@ public class GateInActivity extends AppCompatActivity {
 
         qrCodeEditText.requestFocus();
         mFocusedEditText = qrCodeEditText;
-
-        Toast.makeText(this, "入库成功!", Toast.LENGTH_SHORT).show();
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
