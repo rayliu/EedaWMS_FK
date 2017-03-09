@@ -20,10 +20,10 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         //String sql = "create table gate_in(id INTEGER PRIMARY KEY AUTOINCREMENT, qr_code varchar(200), part_no varchar(60), quantity int);";
-        String gete_in_sql = "CREATE TABLE `gate_in` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
+        /*String gete_in_sql = "CREATE TABLE `gate_in` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
              " `part_no`  varchar(255) NULL , `quantity`  int(20) NULL , `shelves`  varchar(255) NULL ," +
              " `creator`  varchar(255) NULL  ,`create_time`  datetime NULL, return_flag varchar(2) default 'N'," +
-             " move_flag varchar(2) default 'N')) ";
+             " move_flag varchar(2) default 'N') ";
         db.execSQL(gete_in_sql);
 
         String gate_out_sql = "CREATE TABLE `gate_out` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
@@ -36,7 +36,7 @@ public class DbHelper extends SQLiteOpenHelper {
            "  	`quantity` INT (20) NULL, 	`check_quantity` INT (20) NULL, `shelves` VARCHAR (255) NULL, " +
            " 	`creator` VARCHAR (255) NULL, 	`create_time` datetime NULL,`check_time` datetime NULL )";
         db.execSQL(inv_check_sql);
-        db.close();
+        db.close();*/
     }
 
     @Override
