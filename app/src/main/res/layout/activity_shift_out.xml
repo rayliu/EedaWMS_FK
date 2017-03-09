@@ -136,10 +136,10 @@
         </LinearLayout>
 
         <Button
-            android:text="确认入库"
+            android:id="@+id/comfirmBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/comfirmBtn" />
+            android:text="移库(出)确认" />
 
         <Button
             android:text="下一个货架"
