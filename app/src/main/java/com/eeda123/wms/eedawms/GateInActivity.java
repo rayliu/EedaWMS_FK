@@ -61,9 +61,36 @@ public class GateInActivity extends AppCompatActivity {
     protected void findViewById() {
 
         qrCodeEditText = (EditText) findViewById(R.id.qrCodeEditText);
+        qrCodeEditText.setOnClickListener(new View.OnClickListener() {
+                                              @Override
+                                              public void onClick(View v) {
+                                                  mFocusedEditText = qrCodeEditText;
+                                              }
+                                          });
+
         partNoEditText = (EditText) findViewById(R.id.part_no);
+        partNoEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFocusedEditText = partNoEditText;
+            }
+        });
+
         quantityEditText = (EditText) findViewById(R.id.quantity);
+        quantityEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFocusedEditText = quantityEditText;
+            }
+        });
+
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
+        shelfEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFocusedEditText = shelfEditText;
+            }
+        });
 
         mFocusedEditText = shelfEditText;
         //qrCodeEditText.setOnFocusChangeListener(focusListener);
