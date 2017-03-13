@@ -1,6 +1,7 @@
 package com.eeda123.wms.eedawms;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +33,7 @@ public class GateInActivity extends AppCompatActivity {
     private EditText shelfEditText;
     public static String USER_NAME;
 
-    private EditText mFocusedEditText;
+    //private EditText mFocusedEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +59,14 @@ public class GateInActivity extends AppCompatActivity {
         }
     }
 
-    protected void findViewById() {
 
+
+    protected void findViewById() {
         qrCodeEditText = (EditText) findViewById(R.id.qrCodeEditText);
         qrCodeEditText.setOnClickListener(new View.OnClickListener() {
                                               @Override
                                               public void onClick(View v) {
-                                                  mFocusedEditText = qrCodeEditText;
+                                                  //mFocusedEditText = qrCodeEditText;
                                               }
                                           });
 
@@ -72,7 +74,7 @@ public class GateInActivity extends AppCompatActivity {
         partNoEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFocusedEditText = partNoEditText;
+                //mFocusedEditText = partNoEditText;
             }
         });
 
@@ -80,7 +82,7 @@ public class GateInActivity extends AppCompatActivity {
         quantityEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFocusedEditText = quantityEditText;
+                //mFocusedEditText = quantityEditText;
             }
         });
 
@@ -88,11 +90,11 @@ public class GateInActivity extends AppCompatActivity {
         shelfEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFocusedEditText = shelfEditText;
+                //mFocusedEditText = shelfEditText;
             }
         });
 
-        mFocusedEditText = shelfEditText;
+        //mFocusedEditText = shelfEditText;
         //qrCodeEditText.setOnFocusChangeListener(focusListener);
 
         findViewById(R.id.comfirmBtn).setOnClickListener(new View.OnClickListener() {
@@ -120,6 +122,8 @@ public class GateInActivity extends AppCompatActivity {
                 //finish();
                 clearDate();
                 Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_SHORT).show();
+
+
             }
         });
 
@@ -129,7 +133,7 @@ public class GateInActivity extends AppCompatActivity {
                 clearDate();
                 shelfEditText.setText("");
                 shelfEditText.requestFocus();
-                mFocusedEditText = shelfEditText;
+                //mFocusedEditText = shelfEditText;
             }
         });
     };
@@ -141,7 +145,7 @@ public class GateInActivity extends AppCompatActivity {
         quantityEditText.setText("");
 
         qrCodeEditText.requestFocus();
-        mFocusedEditText = qrCodeEditText;
+        //mFocusedEditText = qrCodeEditText;
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
@@ -164,7 +168,11 @@ public class GateInActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    mFocusedEditText.setText(datat);
+                    //mFocusedEditText.setText(datat);
+                    if(shelfEditText.hasFocus()) {
+                        shelfEditText.setText(datat);
+                        new AlertDialog.Builder(context).setMessage(datat).create().show();
+                    }
 
                     if(qrCodeEditText.hasFocus()) {
                         qrCodeEditText.setText(datat);
@@ -183,7 +191,7 @@ public class GateInActivity extends AppCompatActivity {
 
                     if(shelfEditText.hasFocus()) {
                         qrCodeEditText.requestFocus();
-                        mFocusedEditText = qrCodeEditText;
+                        //mFocusedEditText = qrCodeEditText;
                     }
                  }
             };
@@ -194,17 +202,13 @@ public class GateInActivity extends AppCompatActivity {
 
     }
 
-    private void showToast(String datat) {
-        Toast toast = Toast.makeText(getApplicationContext(),
-                "Ray data: " + datat, Toast.LENGTH_SHORT);
-//                            "data: " + datat + "\n" + getstr, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, offset);// 居中显示 x,y
-        toast.show();
-        offset = offset + 50;//设置TOAST显示偏移，便于区分不同次接收到的数据
-        if (offset > 400) offset = 0;
-    }
-
-
-
-
+//    private void showToast(String datat) {
+//        Toast toast = Toast.makeText(getApplicationContext(),
+//                "Ray data: " + datat, Toast.LENGTH_SHORT);
+////                            "data: " + datat + "\n" + getstr, Toast.LENGTH_SHORT);
+//        toast.setGravity(Gravity.CENTER, 0, offset);// 居中显示 x,y
+//        toast.show();
+//        offset = offset + 50;//设置TOAST显示偏移，便于区分不同次接收到的数据
+//        if (offset > 400) offset = 0;
+//    }
 }

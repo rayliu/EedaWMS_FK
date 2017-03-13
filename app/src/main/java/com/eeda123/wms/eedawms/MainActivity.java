@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.AlphabeticIndex;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -192,60 +193,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!exportDir.exists()) {
                     exportDir.mkdirs();
                 }
-                try {
-                    List<String> list = new ArrayList<String>();
-                    list.add("入库记录");
-                    list.add("出库记录");
-                    list.add("盘点单");
-                    for(String order:list){
-                        GateInDao gateInDao = new GateInDao(MainActivity.this);
-                        GateOutDao gateOutDao = new GateOutDao(MainActivity.this);
-                        InvCheckOrderDao invCheckDao = new InvCheckOrderDao(MainActivity.this);
-                        ArrayList<HashMap<String, ?>> listdata = null;
-                        System.out.println("####baishi######:"+order);
-                        if("入库记录".equals(order)){
-                            listdata = gateInDao.getList();
-                        }else if("出库记录".equals(order)){
-                            listdata = gateOutDao.getList();
-                        }else if("盘点单".equals(order)){
-                            listdata = invCheckDao.getList();
+
+                String msg = null;
+                GateInDao gateInDao = new GateInDao(MainActivity.this);
+                success = creatCSV(exportDirStr,"入库记录",gateInDao.getList(),currentDateString);
+                GateOutDao gateOutDao = new GateOutDao(MainActivity.this);
+                success = creatCSV(exportDirStr,"出库记录",gateOutDao.getList(),currentDateString);
+                InvCheckOrderDao invCheckDao = new InvCheckOrderDao(MainActivity.this);
+                success = creatCSV(exportDirStr,"盘点单",invCheckDao.getList(),currentDateString);
+                Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir, Toast.LENGTH_LONG).show();
+                DbHelper database_helper = new DbHelper(MainActivity.this);
+                SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+//                    db.execSQL("delete from gate_in ");
+//                    db.execSQL("delete from gate_out ");
+//                    db.execSQL("delete from inv_check_order ");
+                db.close();
+            }
+            return success;
+        }
+
+        public boolean creatCSV(String exportDir,String order, ArrayList<HashMap<String, ?>> listdata ,String currentDateString){
+            boolean success = false;
+            try {
+                File file = new File(exportDir, order + "_" + currentDateString + ".csv");
+                file.createNewFile();
+                CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+                if (listdata.size() > 0) {
+                    for (int index = 0; index < listdata.size(); index++) {
+                        HashMap<String, ?> sa = listdata.get(index);
+                        if (index == 0) {
+                            String data = (sa.keySet().toString()).substring(1, (sa.keySet().toString()).length() - 1);
+                            String dataArray[] = data.split(",");
+                            csvWrite.writeNext(dataArray);
                         }
 
-                        File file = new File(exportDir,  order+"_"+currentDateString + ".csv");
-                        file.createNewFile();
-                        CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
-                        if (listdata.size() > 0) {
-                            for (int index = 0; index < listdata.size(); index++) {
-                                HashMap<String, ?> sa = listdata.get(index);
-                                if(index == 0){
-                                    String data = (sa.keySet().toString()).substring(1,(sa.keySet().toString()).length()-1);
-                                    String dataArray[] = data.split(",");
-                                    csvWrite.writeNext(dataArray);
-                                }
-
-                                String arrStr[] = new String[sa.size()];
-                                int i = 0;
-                                for(Map.Entry<String, ?> m : sa.entrySet()){
-                                    arrStr[i] =(String) m.getValue();
-                                    i++;
-                                }
-                                csvWrite.writeNext(arrStr);
-                            }
-                            success = true;
+                        String arrStr[] = new String[sa.size()];
+                        int i = 0;
+                        for (Map.Entry<String, ?> m : sa.entrySet()) {
+                            arrStr[i] = (String) m.getValue();
+                            i++;
                         }
-                        csvWrite.close();
+                        csvWrite.writeNext(arrStr);
                     }
-                    Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir, Toast.LENGTH_LONG).show();
-                    DbHelper database_helper = new DbHelper(MainActivity.this);
-                    SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
-                    db.execSQL("delete from gate_in ");
-                    db.execSQL("delete from gate_out ");
-                    db.execSQL("delete from inv_check_order ");
-                    db.close();
-                } catch (IOException e) {
-                    Log.e("MainActivity", e.getMessage(), e);
-                    return success;
+                    success = true;
                 }
+                csvWrite.close();
+            } catch (IOException e) {
+                Log.e("MainActivity", e.getMessage(), e);
+                return success;
             }
             return success;
         }
