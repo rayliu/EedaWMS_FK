@@ -42,7 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/shelfTextView"
-                    android:layout_weight="0.38" />
+                    android:layout_weight="0.38"/>
 
                 <EditText
                     android:layout_width="100dp"
@@ -138,17 +138,11 @@
         </LinearLayout>
 
         <Button
-            android:text="确认入库"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/comfirmBtn" />
-
-        <Button
             android:text="下一个货架"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/nextShelfBtn"
-            android:layout_marginTop="50dip" />
+            android:layout_marginTop="100dip" />
 
     </LinearLayout>
 

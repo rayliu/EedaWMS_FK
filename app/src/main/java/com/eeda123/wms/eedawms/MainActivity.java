@@ -1,7 +1,9 @@
 package com.eeda123.wms.eedawms;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.text.AlphabeticIndex;
@@ -9,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -261,6 +265,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
+    }
+
+    public static void disableShowSoftInput(EditText editText)
+    {
+        if (android.os.Build.VERSION.SDK_INT <= 10)
+        {
+            editText.setInputType(InputType.TYPE_NULL);
+        }
+        else {
+            Class<EditText> cls = EditText.class;
+            Method method;
+            try {
+                method = cls.getMethod("setShowSoftInputOnFocus",boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            }catch (Exception e) {
+                // TODO: handle exception
+            }
+
+            try {
+                method = cls.getMethod("setSoftInputShownOnFocus",boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            }catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
+    public static  void showAlertDialog(Context context ,String datat ){
+        new AlertDialog.Builder(context).setMessage(datat).create().show();
     }
 
 }
