@@ -9,11 +9,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.eeda123.wms.eedawms.model.DbHelper;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,12 +41,6 @@ public class GateInActivity extends AppCompatActivity {
         getsystemscandata();//注册接收数据广播，以TOAST形式显示，退出界面也可以查看数据
 
         findViewById();
-
-        //shelfEditText.setInputType(InputType.TYPE_NULL);
-        MainActivity.disableShowSoftInput(shelfEditText);
-        MainActivity.disableShowSoftInput(qrCodeEditText);
-        MainActivity.disableShowSoftInput(quantityEditText);
-        MainActivity.disableShowSoftInput(partNoEditText);
     }
 
     @Override
@@ -62,18 +62,22 @@ public class GateInActivity extends AppCompatActivity {
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
+        //shelfEditText.setInputType(InputType.TYPE_NULL);
+        MainActivity.disableShowSoftInput(shelfEditText);
+        MainActivity.disableShowSoftInput(qrCodeEditText);
+        MainActivity.disableShowSoftInput(quantityEditText);
+        MainActivity.disableShowSoftInput(partNoEditText);
 
-        findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearDate();
-                shelfEditText.setText("");
-                shelfEditText.requestFocus();
-            }
-        });
     };
 
-    public void comfirmOrder(){
+
+//    public boolean onKeyDown(View view, Editable text, int keyCode, KeyEvent event) {
+//
+//        return false;
+//    }
+
+
+    public void confirmOrder(Context context){
         DbHelper database_helper = new DbHelper(GateInActivity.this);
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
 
@@ -85,14 +89,20 @@ public class GateInActivity extends AppCompatActivity {
 
         Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
         while (cursor.moveToNext()) {
-            Toast.makeText(getApplicationContext(), "库存中已存在此货品!", Toast.LENGTH_LONG).show();
+            MainActivity.showAlertDialog(context,"库存中已存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                    +quantityEditText.getText());
+            //Toast.makeText(getApplicationContext(), "库存中已存在此货品!", Toast.LENGTH_LONG).show();
+            clearDate();
             return;
         }
 
         db.execSQL("insert into gate_in(qr_code, part_no, quantity, shelves,creator,create_time)" +
                 " values ('"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
+
+        MainActivity.showAlertDialog(context,"入库成功\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                +quantityEditText.getText());
+        //Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_LONG).show();
         clearDate();
-        Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -100,7 +110,6 @@ public class GateInActivity extends AppCompatActivity {
         qrCodeEditText.setText("");
         partNoEditText.setText("");
         quantityEditText.setText("");
-
         qrCodeEditText.requestFocus();
     }
 
@@ -124,37 +133,47 @@ public class GateInActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    if(shelfEditText.hasFocus()) {
-                        shelfEditText.setText(datat);
-                        MainActivity.showAlertDialog(context,datat);
-                    }
-
                     if(qrCodeEditText.hasFocus()) {
-                        qrCodeEditText.setText(datat);
+                        if(StringUtils.isEmpty(shelfEditText.getText())){
+                            MainActivity.showAlertDialog(context,"请先扫描货架号");
+                            shelfEditText.requestFocus();
+                            return;
+                        }
                         int mIndex = 0;
                         Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                         while(m.find()) {
-                            System.out.println("####qr######:" + datat);
-                            System.out.println("####m str ######:" + m.group());
                             if (mIndex == 4)
                                 partNoEditText.setText(m.group());
                             if (mIndex == 6)
                                 quantityEditText.setText(m.group());
                             mIndex++;
                         }
-                        MainActivity.showAlertDialog(context,"编码："+partNoEditText.getText().toString()+"\n"+"数量："+quantityEditText.getText());
-                        comfirmOrder();
+
+                        if(mIndex>1){
+                            qrCodeEditText.setText(datat);
+                            if(StringUtils.isNotEmpty(shelfEditText.getText())){
+                                confirmOrder(context);
+                            }else{
+                                MainActivity.showAlertDialog(context,"货架号不能为空");
+                            }
+                        }else{
+                            MainActivity.showAlertDialog(context,"QR CODE格式无法识别");
+                        }
                     }
 
                     if(shelfEditText.hasFocus()) {
-                        qrCodeEditText.requestFocus();
+                        if(datat.length()>7){
+                            MainActivity.showAlertDialog(context,"货架格式无法识别");
+                        }else{
+                            shelfEditText.setText(datat);
+                            qrCodeEditText.requestFocus();
+                            MainActivity.showAlertDialog(context,datat);
+                        }
                     }
-
                  }
             };
         };
         IntentFilter filter = new IntentFilter(getstr);
         registerReceiver(mBrReceiver, filter);
     }
-
 }

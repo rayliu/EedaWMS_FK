@@ -1,5 +1,6 @@
 package com.eeda123.wms.eedawms;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +11,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.eeda123.wms.eedawms.model.DbHelper;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InvCheckActivity extends AppCompatActivity {
-    private int offset = 0;
     private EditText orderNoEditText;
     private EditText qrCodeEditText;
     private EditText partNoEditText;
@@ -27,7 +30,6 @@ public class InvCheckActivity extends AppCompatActivity {
     private EditText shelfEditText;
     public static String USER_NAME;
 
-    private EditText mFocusedEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,38 +60,25 @@ public class InvCheckActivity extends AppCompatActivity {
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
 
-        mFocusedEditText = shelfEditText;
-        //qrCodeEditText.setOnFocusChangeListener(focusListener);
+        MainActivity.disableShowSoftInput(shelfEditText);
+        MainActivity.disableShowSoftInput(qrCodeEditText);
+        MainActivity.disableShowSoftInput(quantityEditText);
+        MainActivity.disableShowSoftInput(partNoEditText);
 
-        findViewById(R.id.comfirmBtn).setOnClickListener(new View.OnClickListener() {
+        EditText searchView = (EditText) findViewById(R.id.order_no);
+        searchView.setOnFocusChangeListener(new android.view.View.
+                OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                //unregisterReceiver(mBrReceiver);
-                //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
-
-                DbHelper database_helper = new DbHelper(InvCheckActivity.this);
-                SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
-
-                String order_no = orderNoEditText.getText().toString();
-                String qrCode = qrCodeEditText.getText().toString();
-                String part_no = partNoEditText.getText().toString();
-                String quantity = quantityEditText.getText().toString();
-                String shelf = shelfEditText.getText().toString();
-                String userName = getIntent().getStringExtra(USER_NAME);
-
-                Cursor cursor = db.rawQuery("select * from inv_check_order where qr_code = '"+qrCode+"'", null);
-                while (cursor.moveToNext()) {
-                    Toast.makeText(getApplicationContext(), "此货品已重复盘点!", Toast.LENGTH_LONG).show();
-                    clearDate();
-                    return;
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // 此处为得到焦点时的处理内容
+                } else {
+                    // 此处为失去焦点时的处理内容
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                 }
-
-                db.execSQL("insert into inv_check_order(order_no,qr_code, part_no, quantity, shelves,creator,create_time)" +
-                        " values ('"+order_no+"','"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
-                //unregisterReceiver(mBrReceiver);
-                //finish();
-                clearDate();
-                Toast.makeText(getApplicationContext(), "确认成功!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -102,13 +91,51 @@ public class InvCheckActivity extends AppCompatActivity {
         });
     };
 
+    public static void hideInputMethod(Activity activity) {
+        if (null == activity) {
+            return;
+        }
+        if (null != activity.getCurrentFocus() && null != activity.getCurrentFocus().getWindowToken())
+        {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    public void confirmOrder(Context context) {
+        DbHelper database_helper = new DbHelper(InvCheckActivity.this);
+        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+
+        String order_no = orderNoEditText.getText().toString();
+        String qrCode = qrCodeEditText.getText().toString();
+        String part_no = partNoEditText.getText().toString();
+        String quantity = quantityEditText.getText().toString();
+        String shelf = shelfEditText.getText().toString();
+        String userName = getIntent().getStringExtra(USER_NAME);
+
+        Cursor cursor = db.rawQuery("select * from inv_check_order where qr_code = '"+qrCode+"'", null);
+        while (cursor.moveToNext()) {
+            MainActivity.showAlertDialog(context,"此货品已重复盘点!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                    +quantityEditText.getText());
+            //Toast.makeText(getApplicationContext(), "此货品已重复盘点!", Toast.LENGTH_LONG).show();
+            clearDate();
+            return;
+        }
+
+        db.execSQL("insert into inv_check_order(order_no,qr_code, part_no, quantity, shelves,creator,create_time)" +
+                " values ('"+order_no+"','"+qrCode+"','"+part_no+"','"+quantity+"','"+shelf+"','"+userName+"','"+MainActivity.getDate()+"')");
+        MainActivity.showAlertDialog(context,"确认成功!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                +quantityEditText.getText());
+        clearDate();
+        //Toast.makeText(getApplicationContext(), "确认成功!", Toast.LENGTH_SHORT).show();
+    }
+
     public void clearDate(){
         qrCodeEditText.setText("");
         partNoEditText.setText("");
         quantityEditText.setText("");
 
         qrCodeEditText.requestFocus();
-        mFocusedEditText = qrCodeEditText;
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
@@ -131,31 +158,48 @@ public class InvCheckActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    mFocusedEditText.setText(datat);
+                    if(StringUtils.isEmpty(orderNoEditText.getText())){
+                        MainActivity.showAlertDialog(context,"请先填写盘点单号");
+                        orderNoEditText.requestFocus();
+                        return;
+                    }
 
                     if(qrCodeEditText.hasFocus()) {
-                        qrCodeEditText.setText(datat);
+                        if(StringUtils.isEmpty(shelfEditText.getText())){
+                            MainActivity.showAlertDialog(context,"请先扫描货架号");
+                            shelfEditText.requestFocus();
+                            return;
+                        }
                         int mIndex = 0;
                         Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                         while(m.find()) {
-                            System.out.println("####qr######:"+datat);
-                            System.out.println("####m str ######:"+m.group());
-                            if(mIndex == 4)
+                            if (mIndex == 4)
                                 partNoEditText.setText(m.group());
-                            if(mIndex == 6)
+                            if (mIndex == 6)
                                 quantityEditText.setText(m.group());
                             mIndex++;
                         }
 
-                        if(qrCodeEditText.hasFocus()) {
-                            quantityEditText.requestFocus();
-                            mFocusedEditText = quantityEditText;
+                        if(mIndex>1){
+                            qrCodeEditText.setText(datat);
+                            if(StringUtils.isNotEmpty(shelfEditText.getText())){
+                                confirmOrder(context);
+                            }else{
+                                MainActivity.showAlertDialog(context,"货架号不能为空");
+                            }
+                        }else{
+                            MainActivity.showAlertDialog(context,"QR CODE格式无法识别");
                         }
                     }
 
                     if(shelfEditText.hasFocus()) {
-                        qrCodeEditText.requestFocus();
-                        mFocusedEditText = qrCodeEditText;
+                        if(datat.length()>7){
+                            MainActivity.showAlertDialog(context,"货架格式无法识别");
+                        }else{
+                            shelfEditText.setText(datat);
+                            qrCodeEditText.requestFocus();
+                            MainActivity.showAlertDialog(context,datat);
+                        }
                     }
                 }
             };

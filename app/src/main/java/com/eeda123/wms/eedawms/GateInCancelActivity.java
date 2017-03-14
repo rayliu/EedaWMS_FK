@@ -27,7 +27,6 @@ public class GateInCancelActivity extends AppCompatActivity {
     private EditText quantityEditText;
     private EditText shelfEditText;
     public static String USER_NAME;
-    private EditText mFocusedEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,36 +63,38 @@ public class GateInCancelActivity extends AppCompatActivity {
     };
 
     protected void findViewById() {
-
         qrCodeEditText = (EditText) findViewById(R.id.qrCodeEditText);
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
 
-        mFocusedEditText = qrCodeEditText;
-        //qrCodeEditText.setOnFocusChangeListener(focusListener);
-        findViewById(R.id.comfirmBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //unregisterReceiver(mBrReceiver);
-                //Toast.makeText(getApplicationContext(), "反注册广播完成", Toast.LENGTH_SHORT).show();
+        MainActivity.disableShowSoftInput(shelfEditText);
+        MainActivity.disableShowSoftInput(qrCodeEditText);
+        MainActivity.disableShowSoftInput(quantityEditText);
+        MainActivity.disableShowSoftInput(partNoEditText);
+    }
 
-                DbHelper database_helper = new DbHelper(GateInCancelActivity.this);
-                SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+    public void confirmOrder(Context context){
+        DbHelper database_helper = new DbHelper(GateInCancelActivity.this);
+        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
 
-                String qrCode = qrCodeEditText.getText().toString();
+        String qrCode = qrCodeEditText.getText().toString();
 
-                Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
-                while (!cursor.moveToNext()) {
-                    Toast.makeText(getApplicationContext(), "库存中不存在此货品!", Toast.LENGTH_LONG).show();
-                    return;
-                }
+        Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
+        while (!cursor.moveToNext()) {
+            MainActivity.showAlertDialog(context,"库存中已存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                    +quantityEditText.getText());
+            //Toast.makeText(getApplicationContext(), "库存中不存在此货品!", Toast.LENGTH_LONG).show();
+            qrCodeEditText.requestFocus();
+            clearDate();
+            return;
+        }
 
-                db.execSQL("delete from gate_in where qr_code = '"+qrCode+"'; ");
-                Toast.makeText(getApplicationContext(), "取消成功!", Toast.LENGTH_SHORT).show();
-                clearDate();
-            }
-        });
+        db.execSQL("delete from gate_in where qr_code = '"+qrCode+"'; ");
+        MainActivity.showAlertDialog(context,"取消成功\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+                +quantityEditText.getText());
+        //Toast.makeText(getApplicationContext(), "取消成功!", Toast.LENGTH_LONG).show();
+        clearDate();
     }
 
     public void clearDate(){
@@ -103,7 +104,6 @@ public class GateInCancelActivity extends AppCompatActivity {
         shelfEditText.setText("");
 
         qrCodeEditText.requestFocus();
-        mFocusedEditText = qrCodeEditText;
     }
 
     public void getsystemscandata() {
@@ -113,39 +113,28 @@ public class GateInCancelActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    System.out.println("####qr######:"+datat);
-                    mFocusedEditText.setText(datat);
-
-                    int mIndex = 0;
-                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                    while(m.find()) {
-
-                        System.out.println("####m str ######:"+m.group());
-                        if(mIndex == 4)
-                            partNoEditText.setText(m.group());
-                        if(mIndex == 6)
-                            quantityEditText.setText(m.group());
-
-                        mIndex++;
-                    }
-
-                    if(StringUtils.isNotEmpty(datat)){
-                        DbHelper database_helper = new DbHelper(GateInCancelActivity.this);
-                        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
-                        Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+datat+"'", null);
-                        while (cursor.moveToNext()) {
-                            String shelves  = cursor.getString(4);//获取第三列的值
-                            shelfEditText.setText(shelves);
+                    if(qrCodeEditText.hasFocus()) {
+                        int mIndex = 0;
+                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
+                        while(m.find()) {
+                            if (mIndex == 4)
+                                partNoEditText.setText(m.group());
+                            if (mIndex == 6)
+                                quantityEditText.setText(m.group());
+                            mIndex++;
                         }
-                        cursor.close();
-                        db.close();
-                    }
-                }
+
+                        if(mIndex>1){
+                            qrCodeEditText.setText(datat);
+                            confirmOrder(context);
+                        }else{
+                            MainActivity.showAlertDialog(context,"QR CODE格式无法识别");
+                        }
+                    };
+                };
             }
         };
         IntentFilter filter = new IntentFilter(getstr);
         registerReceiver(mBrReceiver, filter);
-        //Toast.makeText(this, "注册广播完成，自动接收数据", Toast.LENGTH_LONG).show();
-
     }
 }

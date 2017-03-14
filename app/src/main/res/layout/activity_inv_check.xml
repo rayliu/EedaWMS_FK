@@ -33,7 +33,8 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/order_no"
-                android:layout_weight="1.16" />
+                android:layout_weight="1.16"
+                />
         </LinearLayout>
 
         <TextView
@@ -66,7 +67,8 @@
                     android:inputType="textPersonName"
                     android:ems="10"
                     android:id="@+id/shelfEditText"
-                    android:layout_weight="1.18" />
+                    android:layout_weight="1.18"
+                    />
 
             </LinearLayout>
         </LinearLayout>
@@ -151,11 +153,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:text="盘点确认"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/comfirmBtn" />
         <Button
             android:text="盘点结束"
             android:layout_width="match_parent"
