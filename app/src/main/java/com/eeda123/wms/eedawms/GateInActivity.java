@@ -68,6 +68,24 @@ public class GateInActivity extends AppCompatActivity {
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
 
+        findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearDate();
+                shelfEditText.setText("");
+                shelfEditText.requestFocus();
+            }
+        });
+
+        findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),
+                        GateInListActivity.class);
+                startActivity(intent);
+            }
+        });
+
     };
 
 
