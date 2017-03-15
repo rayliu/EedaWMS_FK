@@ -208,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir, Toast.LENGTH_LONG).show();
                 DbHelper database_helper = new DbHelper(MainActivity.this);
                 SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
-//                    db.execSQL("delete from gate_in ");
-//                    db.execSQL("delete from gate_out ");
-//                    db.execSQL("delete from inv_check_order ");
+                db.execSQL("delete from gate_in ");
+                db.execSQL("delete from gate_out ");
+                db.execSQL("delete from inv_check_order ");
                 db.close();
             }
             return success;
@@ -219,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public boolean creatCSV(String exportDir,String order, ArrayList<HashMap<String, ?>> listdata ,String currentDateString){
             boolean success = false;
             try {
+                if(listdata.size() < 1)
+                    return true;
                 File file = new File(exportDir, order + "_" + currentDateString + ".csv");
                 file.createNewFile();
                 CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
