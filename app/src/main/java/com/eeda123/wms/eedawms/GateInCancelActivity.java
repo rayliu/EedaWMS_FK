@@ -82,7 +82,7 @@ public class GateInCancelActivity extends AppCompatActivity {
 
         Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
         while (!cursor.moveToNext()) {
-            MainActivity.showAlertDialog(context,"库存中已存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
+            MainActivity.showAlertDialog(context,"库存中不存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                     +quantityEditText.getText());
             //Toast.makeText(getApplicationContext(), "库存中不存在此货品!", Toast.LENGTH_LONG).show();
             qrCodeEditText.requestFocus();
