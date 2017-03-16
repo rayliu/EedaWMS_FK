@@ -42,8 +42,8 @@
         <activity android:name=".InvReCheckActivity"
         android:label="盘点复核"
         android:screenOrientation="portrait" />
-        <activity android:name=".GateInListActivity"
-            android:label="入库记录"
+        <activity android:name=".ListActivity"
+            android:label="列表记录"
             android:screenOrientation="portrait" />
 
     </application>

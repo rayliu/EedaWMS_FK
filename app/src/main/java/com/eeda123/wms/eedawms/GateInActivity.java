@@ -1,6 +1,5 @@
 package com.eeda123.wms.eedawms;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,13 +8,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
+
 import com.eeda123.wms.eedawms.model.DbHelper;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +77,8 @@ public class GateInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),
-                        GateInListActivity.class);
+                        ListActivity.class);
+                intent.putExtra(ListActivity.page_type,"gateIn");
                 startActivity(intent);
             }
         });

@@ -159,6 +159,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/checkOverBtn"
             android:layout_marginTop="50dip"/>
+        <Button
+            android:text="列表"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listBtn"
+            android:layout_marginTop="15dip"
+            android:layout_marginLeft="200dip" />
 
     </LinearLayout>
 </RelativeLayout>

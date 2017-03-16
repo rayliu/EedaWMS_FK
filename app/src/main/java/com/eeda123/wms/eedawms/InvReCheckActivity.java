@@ -116,6 +116,16 @@ public class InvReCheckActivity extends AppCompatActivity {
                 }
             }
         });
+
+        findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),
+                        ListActivity.class);
+                intent.putExtra(ListActivity.page_type,"invReCheck");
+                startActivity(intent);
+            }
+        });
     };
 
     public void clearDate(){

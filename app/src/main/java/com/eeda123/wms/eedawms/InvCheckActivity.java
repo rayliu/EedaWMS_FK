@@ -89,6 +89,16 @@ public class InvCheckActivity extends AppCompatActivity {
             finish();
             }
         });
+
+        findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),
+                        ListActivity.class);
+                intent.putExtra(ListActivity.page_type,"invCheck");
+                startActivity(intent);
+            }
+        });
     };
 
     public static void hideInputMethod(Activity activity) {
@@ -113,10 +123,11 @@ public class InvCheckActivity extends AppCompatActivity {
         String shelf = shelfEditText.getText().toString();
         String userName = getIntent().getStringExtra(USER_NAME);
 
-        Cursor cursor = db.rawQuery("select * from inv_check_order where qr_code = '"+qrCode+"'", null);
+        Cursor cursor = db.rawQuery("select shelves from inv_check_order where qr_code = '"+qrCode+"'", null);
         while (cursor.moveToNext()) {
             MainActivity.showAlertDialog(context,"此货品已重复盘点!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
-                    +quantityEditText.getText());
+                    +quantityEditText.getText()+"\n"+"货架："
+                    +cursor.getString(0));
             //Toast.makeText(getApplicationContext(), "此货品已重复盘点!", Toast.LENGTH_LONG).show();
             clearDate();
             return;

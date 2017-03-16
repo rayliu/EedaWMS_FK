@@ -70,6 +70,16 @@ public class GateInReturnActivity extends AppCompatActivity {
                 shelfEditText.requestFocus();
             }
         });
+
+        findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),
+                        ListActivity.class);
+                intent.putExtra(ListActivity.page_type,"gateInReturn");
+                startActivity(intent);
+            }
+        });
     };
 
     public void confirmOrder(Context context) {

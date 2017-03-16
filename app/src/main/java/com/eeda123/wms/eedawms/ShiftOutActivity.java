@@ -11,11 +11,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eeda123.wms.eedawms.model.DbHelper;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,12 +57,13 @@ public class ShiftOutActivity extends AppCompatActivity {
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
 
-        findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clearDate();
-                shelfEditText.setText("");
-                shelfEditText.requestFocus();
+                Intent intent = new Intent(getApplicationContext(),
+                        ListActivity.class);
+                intent.putExtra(ListActivity.page_type,"shiftOut");
+                startActivity(intent);
             }
         });
     };

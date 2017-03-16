@@ -80,7 +80,8 @@ public class GateInCancelActivity extends AppCompatActivity {
 
         String qrCode = qrCodeEditText.getText().toString();
 
-        Cursor cursor = db.rawQuery("select * from gate_in where qr_code = '"+qrCode+"'", null);
+        Cursor cursor = db.rawQuery("select shelves from gate_in where qr_code = '"+qrCode+"'", null);
+
         while (!cursor.moveToNext()) {
             MainActivity.showAlertDialog(context,"库存中不存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                     +quantityEditText.getText());
@@ -89,10 +90,11 @@ public class GateInCancelActivity extends AppCompatActivity {
             clearDate();
             return;
         }
-
+        String shelves = cursor.getString(0);
         db.execSQL("delete from gate_in where qr_code = '"+qrCode+"'; ");
         MainActivity.showAlertDialog(context,"取消成功\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
-                +quantityEditText.getText());
+                +quantityEditText.getText()+"\n"+"货架："
+                +shelves);
         //Toast.makeText(getApplicationContext(), "取消成功!", Toast.LENGTH_LONG).show();
         clearDate();
     }

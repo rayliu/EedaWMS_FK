@@ -8,26 +8,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.eeda123.wms.eedawms.model.DbHelper;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class GateInListActivity extends AppCompatActivity {
-
+public class ListActivity extends AppCompatActivity {
+    public static String page_type;
     //private EditText mFocusedEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gate_in_list);
+        setContentView(R.layout.activity_list);
 
         getSupportActionBar().setHomeButtonEnabled(true);//返回按钮
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,10 +44,26 @@ public class GateInListActivity extends AppCompatActivity {
 
 
     protected void findViewById() {
-        DbHelper database_helper = new DbHelper(GateInListActivity.this);
+        page_type = getIntent().getStringExtra(page_type);
+        DbHelper database_helper = new DbHelper(ListActivity.this);
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+        Cursor cursor = null;
+        if("gateIn".equals(page_type)){
+            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in order by id desc", null);
+        }else if("gateInReturn".equals(page_type)){
+            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in where return_flag = 'Y' order by id desc", null);
+        }else if("shiftIn".equals(page_type)){
+            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in where move_flag = 'Y'  order by id desc", null);
+        }else if("gateOut".equals(page_type)){
+            cursor = db.rawQuery("select id,part_no,quantity from gate_out order by id desc", null);
+        }else if("shiftOut".equals(page_type)){
+            cursor = db.rawQuery("select id,part_no,quantity from gate_out where move_flag = 'Y' order by id desc", null);
+        }else if("invCheck".equals(page_type)){
+            cursor = db.rawQuery("select shelves,part_no,quantity from inv_check_order order by id desc", null);
+        }else if("invReCheck".equals(page_type)){
+            cursor = db.rawQuery("select shelves,part_no,check_quantity from inv_check_order where check_quantity is not null order by id desc", null);
+        }
 
-        Cursor cursor = db.rawQuery("select shelves,part_no,quantity from gate_in order by shelves", null);
         String data[] = new String[cursor.getCount()];
         int num = 0;
         if(cursor.moveToFirst()){
@@ -63,9 +73,10 @@ public class GateInListActivity extends AppCompatActivity {
             }while(cursor.moveToNext());
         }
 
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(GateInListActivity.this,android.R.layout.simple_list_item_1,data);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(ListActivity.this,android.R.layout.simple_list_item_1,data);
         ListView listView=(ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
+        Log.v("debug","5秒后打印出我！");
     };
 
 
