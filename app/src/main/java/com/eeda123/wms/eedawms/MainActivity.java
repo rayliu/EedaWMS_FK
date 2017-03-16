@@ -296,8 +296,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public static  void showAlertDialog(Context context ,String datat ){
-        new AlertDialog.Builder(context).setMessage(datat).create().show();
+    static AlertDialog adRef = null;
+    public static void showAlertDialog(Context context ,String datat ){
+        if(adRef!=null) {
+            adRef.dismiss();
+        }
+        adRef = new AlertDialog.Builder(context).setMessage(datat).create();
+        adRef.show();
     }
 
 }

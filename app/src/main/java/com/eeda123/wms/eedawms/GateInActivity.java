@@ -94,7 +94,6 @@ public class GateInActivity extends AppCompatActivity {
 //        return false;
 //    }
 
-
     public void confirmOrder(Context context){
         DbHelper database_helper = new DbHelper(GateInActivity.this);
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
@@ -109,7 +108,6 @@ public class GateInActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             MainActivity.showAlertDialog(context,"库存中已存在此货品!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                     +quantityEditText.getText());
-            //Toast.makeText(getApplicationContext(), "库存中已存在此货品!", Toast.LENGTH_LONG).show();
             clearDate();
             return;
         }
