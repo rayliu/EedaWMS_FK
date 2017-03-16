@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(adRef!=null) {
             adRef.dismiss();
         }
-        adRef = new AlertDialog.Builder(context).setMessage(datat).create();
+        adRef = new AlertDialog.Builder(context).setMessage(datat+"\n\n\n\n无需返回即可继续扫描动作").create();
         adRef.show();
     }
 
