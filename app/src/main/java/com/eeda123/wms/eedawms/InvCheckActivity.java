@@ -204,13 +204,13 @@ public class InvCheckActivity extends AppCompatActivity {
                     }
 
                     if(shelfEditText.hasFocus()) {
-                        if(datat.length()>7){
-                            MainActivity.showAlertDialog(context,"货架格式无法识别");
-                        }else{
+//                        if(datat.length()>7){
+//                            MainActivity.showAlertDialog(context,"货架格式无法识别");
+//                        }else{
                             shelfEditText.setText(datat);
                             qrCodeEditText.requestFocus();
                             MainActivity.showAlertDialog(context,datat);
-                        }
+//                        }
                     }
                 }
             };

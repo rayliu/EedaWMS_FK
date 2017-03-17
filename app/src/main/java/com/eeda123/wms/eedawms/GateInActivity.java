@@ -146,6 +146,7 @@ public class GateInActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
+                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                     if(qrCodeEditText.hasFocus()) {
                         if(StringUtils.isEmpty(shelfEditText.getText())){
                             MainActivity.showAlertDialog(context,"请先扫描货架号");
@@ -153,7 +154,6 @@ public class GateInActivity extends AppCompatActivity {
                             return;
                         }
                         int mIndex = 0;
-                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                         while(m.find()) {
                             if (mIndex == 4)
                                 partNoEditText.setText(m.group());
@@ -175,13 +175,13 @@ public class GateInActivity extends AppCompatActivity {
                     }
 
                     if(shelfEditText.hasFocus()) {
-                        if(datat.length()>7){
-                            MainActivity.showAlertDialog(context,"货架格式无法识别");
-                        }else{
+//                        if(datat.length()>7){
+//                            MainActivity.showAlertDialog(context,"货架格式无法识别");
+//                        }else{
                             shelfEditText.setText(datat);
                             qrCodeEditText.requestFocus();
                             MainActivity.showAlertDialog(context,datat);
-                        }
+//                        }
                     }
                  }
             };
