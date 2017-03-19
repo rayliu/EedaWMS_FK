@@ -16,6 +16,8 @@ import com.eeda123.wms.eedawms.model.DbHelper;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -153,16 +155,21 @@ public class GateInActivity extends AppCompatActivity {
                             shelfEditText.requestFocus();
                             return;
                         }
-                        int mIndex = 0;
-                        while(m.find()) {
-                            if (mIndex == 4)
-                                partNoEditText.setText(m.group());
-                            if (mIndex == 6)
-                                quantityEditText.setText(m.group());
-                            mIndex++;
+
+                        List<String> list = new ArrayList<String>();
+
+                        while (m.find()) {
+                            list.add(m.group());
                         }
 
-                        if(mIndex>1){
+                        String partNo = list.get(list.size()-1);
+                        String quantity = list.get(list.size()-3);
+
+                         partNoEditText.setText(partNo);
+                         quantityEditText.setText(quantity);
+
+
+                        if(list.size()>3){
                             qrCodeEditText.setText(datat);
                             if(StringUtils.isNotEmpty(shelfEditText.getText())){
                                 confirmOrder(context);
