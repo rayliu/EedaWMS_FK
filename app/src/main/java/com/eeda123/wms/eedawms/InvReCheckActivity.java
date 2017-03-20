@@ -18,6 +18,8 @@ import com.eeda123.wms.eedawms.model.DbHelper;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,20 +161,19 @@ public class InvReCheckActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
+                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                     if(qrCodeEditText.hasFocus()) {
-                        int mIndex = 0;
-                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                        while(m.find()) {
-                            if (mIndex == 4)
-                                partNoEditText.setText(m.group());
-                            if (mIndex == 6)
-                                quantityEditText.setText(m.group());
-                            mIndex++;
+                        List<String> list = new ArrayList<String>();
+                        while (m.find()) {
+                            list.add(m.group());
                         }
+                        String quantity = list.get(list.size()-1);
+                        String partNo = list.get(list.size()-3);
 
-                        if(mIndex>1){
+                        if(list.size()>=3){
                             qrCodeEditText.setText(datat);
-
+                            partNoEditText.setText(partNo);
+                            quantityEditText.setText(quantity);
                             if(StringUtils.isNotEmpty(datat)){
                                 DbHelper database_helper = new DbHelper(InvReCheckActivity.this);
                                 SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
@@ -183,9 +184,8 @@ public class InvReCheckActivity extends AppCompatActivity {
                                     clearDate();
                                     qrCodeEditText.requestFocus();
                                 }else {
-                                    int id = cursor.getInt(0); //获取第一列的值,第一列的索引从0开始
-                                    String order_no = cursor.getString(1);
-                                    String shelves  = cursor.getString(6);
+                                    String order_no = cursor.getString(cursor.getColumnIndex("order_no"));
+                                    String shelves  = cursor.getString(cursor.getColumnIndex("shelves"));
                                     orderNoEditText.setText(order_no);
                                     shelfEditText.setText(shelves);
                                     MainActivity.showAlertDialog(context,

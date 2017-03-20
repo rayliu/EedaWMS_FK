@@ -87,12 +87,6 @@ public class GateInActivity extends AppCompatActivity {
 
     };
 
-
-//    public boolean onKeyDown(View view, Editable text, int keyCode, KeyEvent event) {
-//
-//        return false;
-//    }
-
     public void confirmOrder(Context context){
         DbHelper database_helper = new DbHelper(GateInActivity.this);
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
@@ -148,29 +142,24 @@ public class GateInActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
-                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
+                    Matcher m = Pattern.compile("[^\\(\\)]+").matcher(datat);
                     if(qrCodeEditText.hasFocus()) {
                         if(StringUtils.isEmpty(shelfEditText.getText())){
                             MainActivity.showAlertDialog(context,"请先扫描货架号");
                             shelfEditText.requestFocus();
                             return;
                         }
-
                         List<String> list = new ArrayList<String>();
-
                         while (m.find()) {
                             list.add(m.group());
                         }
+                        String quantity = list.get(list.size()-1);
+                        String partNo = list.get(list.size()-3);
 
-                        String partNo = list.get(list.size()-1);
-                        String quantity = list.get(list.size()-3);
-
-                         partNoEditText.setText(partNo);
-                         quantityEditText.setText(quantity);
-
-
-                        if(list.size()>3){
+                        if(list.size()>=3){
                             qrCodeEditText.setText(datat);
+                            partNoEditText.setText(partNo);
+                            quantityEditText.setText(quantity);
                             if(StringUtils.isNotEmpty(shelfEditText.getText())){
                                 confirmOrder(context);
                             }else{
@@ -182,7 +171,7 @@ public class GateInActivity extends AppCompatActivity {
                     }
 
                     if(shelfEditText.hasFocus()) {
-//                        if(datat.length()>7){
+//                        if(m.end()>1){
 //                            MainActivity.showAlertDialog(context,"货架格式无法识别");
 //                        }else{
                             shelfEditText.setText(datat);
@@ -190,7 +179,7 @@ public class GateInActivity extends AppCompatActivity {
                             MainActivity.showAlertDialog(context,datat);
 //                        }
                     }
-                 }
+                }
             };
         };
         IntentFilter filter = new IntentFilter(getstr);

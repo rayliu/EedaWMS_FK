@@ -17,6 +17,8 @@ import com.eeda123.wms.eedawms.model.DbHelper;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,19 +118,20 @@ public class GateInCancelActivity extends AppCompatActivity {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
                     if(qrCodeEditText.hasFocus()) {
-                        int mIndex = 0;
-                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                        while(m.find()) {
-                            if (mIndex == 4)
-                                partNoEditText.setText(m.group());
-                            if (mIndex == 6)
-                                quantityEditText.setText(m.group());
-                            mIndex++;
+                        List<String> list = new ArrayList<String>();
+                        Matcher m = Pattern.compile("[^\\(\\)]+").matcher(datat);
+                        while (m.find()) {
+                            list.add(m.group());
                         }
+                        String quantity = list.get(list.size()-1);
+                        String partNo = list.get(list.size()-3);
 
-                        if(mIndex>1){
+                        if(list.size()>=3){
                             qrCodeEditText.setText(datat);
+                            partNoEditText.setText(partNo);
+                            quantityEditText.setText(quantity);
                             confirmOrder(context);
+
                         }else{
                             MainActivity.showAlertDialog(context,"QR CODE格式无法识别");
                         }

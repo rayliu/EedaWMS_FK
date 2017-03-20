@@ -19,6 +19,8 @@ import com.eeda123.wms.eedawms.model.DbHelper;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -168,6 +170,7 @@ public class InvCheckActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
+                    Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
                     if(StringUtils.isEmpty(orderNoEditText.getText())){
                         MainActivity.showAlertDialog(context,"请先填写盘点单号");
                         orderNoEditText.requestFocus();
@@ -180,18 +183,18 @@ public class InvCheckActivity extends AppCompatActivity {
                             shelfEditText.requestFocus();
                             return;
                         }
-                        int mIndex = 0;
-                        Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                        while(m.find()) {
-                            if (mIndex == 4)
-                                partNoEditText.setText(m.group());
-                            if (mIndex == 6)
-                                quantityEditText.setText(m.group());
-                            mIndex++;
-                        }
 
-                        if(mIndex>1){
+                        List<String> list = new ArrayList<String>();
+                        while (m.find()) {
+                            list.add(m.group());
+                        }
+                        String quantity = list.get(list.size()-1);
+                        String partNo = list.get(list.size()-3);
+
+                        if(list.size()>=3){
                             qrCodeEditText.setText(datat);
+                            partNoEditText.setText(partNo);
+                            quantityEditText.setText(quantity);
                             if(StringUtils.isNotEmpty(shelfEditText.getText())){
                                 confirmOrder(context);
                             }else{
