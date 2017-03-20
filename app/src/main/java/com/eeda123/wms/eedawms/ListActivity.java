@@ -17,7 +17,6 @@ import com.eeda123.wms.eedawms.model.DbHelper;
 
 public class ListActivity extends AppCompatActivity {
     public static String page_type;
-    //private EditText mFocusedEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +24,6 @@ public class ListActivity extends AppCompatActivity {
 
         getSupportActionBar().setHomeButtonEnabled(true);//返回按钮
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getsystemscandata();//注册接收数据广播，以TOAST形式显示，退出界面也可以查看数据
         findViewById();
     }
 
@@ -76,34 +74,5 @@ public class ListActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(ListActivity.this,android.R.layout.simple_list_item_1,data);
         ListView listView=(ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
-        Log.v("debug","5秒后打印出我！");
     };
-
-
-    private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("com.android.receive_scan_action")) {
-                String datat = intent.getStringExtra("data");
-                System.out.println("####baishi######:"+datat);
-            }
-        }
-    };
-
-    /**
-     * 获取接受到的扫描数据,注册广播
-     */
-    public void getsystemscandata() {
-        final String getstr = "com.android.receive_scan_action";
-        mBrReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-            };
-        };
-        IntentFilter filter = new IntentFilter(getstr);
-        registerReceiver(mBrReceiver, filter);
-    }
-
-
 }

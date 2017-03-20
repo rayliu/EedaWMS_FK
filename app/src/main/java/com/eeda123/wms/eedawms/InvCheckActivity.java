@@ -85,8 +85,7 @@ public class InvCheckActivity extends AppCompatActivity {
         findViewById(R.id.checkOverBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            unregisterReceiver(mBrReceiver);
-            finish();
+                finish();
             }
         });
 
