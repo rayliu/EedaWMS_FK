@@ -132,10 +132,10 @@ public class GateOutActivity extends AppCompatActivity {
                         while (m.find()) {
                             list.add(m.group());
                         }
-                        String quantity = list.get(list.size()-1);
-                        String partNo = list.get(list.size()-3);
 
                         if(list.size()>=3){
+                            String quantity = list.get(list.size()-1);
+                            String partNo = list.get(list.size()-3);
                             qrCodeEditText.setText(datat);
                             partNoEditText.setText(partNo);
                             quantityEditText.setText(quantity);
