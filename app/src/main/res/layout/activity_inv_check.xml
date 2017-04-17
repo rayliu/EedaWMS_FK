@@ -154,10 +154,10 @@
         </LinearLayout>
 
         <Button
-            android:text="盘点结束"
+            android:text="下一个货架"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/checkOverBtn"
+            android:id="@+id/nextShelfBtn"
             android:layout_marginTop="50dip"/>
         <Button
             android:text="列表"

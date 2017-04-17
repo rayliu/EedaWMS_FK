@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 public class GateOutActivity extends AppCompatActivity {
     private int offset = 0;
+    private EditText orderNoText;
     private EditText qrCodeEditText;
     private EditText partNoEditText;
     private EditText quantityEditText;
@@ -53,15 +54,19 @@ public class GateOutActivity extends AppCompatActivity {
     }
 
     protected void findViewById() {
+        orderNoText = (EditText) findViewById(R.id.order_no);
         qrCodeEditText = (EditText) findViewById(R.id.qrCodeEditText);
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
 
+
+        //MainActivity.disableShowSoftInput(OrderNoText);
         MainActivity.disableShowSoftInput(shelfEditText);
         MainActivity.disableShowSoftInput(qrCodeEditText);
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
+        orderNoText.hasFocusable();
 
         findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,10 +78,12 @@ public class GateOutActivity extends AppCompatActivity {
             }
         });
     };
+
     public void confirmOrder(Context context) {
         DbHelper database_helper = new DbHelper(GateOutActivity.this);
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
 
+        String order_no = orderNoText.getText().toString();
         String qrCode = qrCodeEditText.getText().toString();
         String part_no = partNoEditText.getText().toString();
         String quantity = quantityEditText.getText().toString();
@@ -91,8 +98,8 @@ public class GateOutActivity extends AppCompatActivity {
             return;
         }
 
-        db.execSQL("insert into gate_out(qr_code, part_no, quantity,creator,create_time)" +
-                " values ('"+qrCode+"','"+part_no+"','"+quantity+"','"+userName+"','"+MainActivity.getDate()+"')");
+        db.execSQL("insert into gate_out(order_no, qr_code, part_no, quantity,creator,create_time)" +
+                " values ('"+order_no+"','"+qrCode+"','"+part_no+"','"+quantity+"','"+userName+"','"+MainActivity.getDate()+"')");
 
         MainActivity.showAlertDialog(context,"出库成功!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                 +quantityEditText.getText());
@@ -127,6 +134,12 @@ public class GateOutActivity extends AppCompatActivity {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
                     Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
+                    if(orderNoText.hasFocus()) {
+                        orderNoText.setText(datat);
+                        qrCodeEditText.requestFocus();
+                        MainActivity.showAlertDialog(context,datat);
+                    }
+
                     if(qrCodeEditText.hasFocus()) {
                         List<String> list = new ArrayList<String>();
                         while (m.find()) {

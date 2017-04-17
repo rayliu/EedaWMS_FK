@@ -26,7 +26,7 @@ public class DbHelper extends SQLiteOpenHelper {
              " move_flag varchar(2) default 'N') ";
         db.execSQL(gete_in_sql);
 
-        String gate_out_sql = "CREATE TABLE `gate_out` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `qr_code`  varchar(255) NULL ," +
+        String gate_out_sql = "CREATE TABLE `gate_out` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT , `order_no`  varchar(255) NULL ,`qr_code`  varchar(255) NULL ," +
              " `part_no`  varchar(255) NULL , `quantity`  int(20) NULL  ," +
              " `creator`  varchar(255) NULL  ,`create_time`  datetime NULL , move_flag varchar(2) default 'N')";
         db.execSQL(gate_out_sql);
