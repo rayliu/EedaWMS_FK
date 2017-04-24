@@ -3,8 +3,10 @@ package com.eeda123.wms.eedawms;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.text.AlphabeticIndex;
 import android.os.AsyncTask;
@@ -39,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
@@ -53,13 +57,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mInvReCheckButton = null;
     private Button mExportButton = null;
     private EditText userNameText = null;
+    private EditText nouserText = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getscandata();
         setContentView(R.layout.activity_main);
         userNameText = (EditText)findViewById(R.id.userName);
+        nouserText = (EditText)findViewById(R.id.nouse);
         addListeners();
     }
 
@@ -304,5 +310,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adRef = new AlertDialog.Builder(context).setMessage(datat+"\n\n\n\n无需返回即可继续扫描动作").create();
         adRef.show();
     }
+
+
+    private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("com.android.receive_scan_action")) {
+                String datat = intent.getStringExtra("data");
+                System.out.println("####baishi######:"+datat);
+            }
+        }
+    };
+
+    /**
+     * 获取接受到的扫描数据,注册广播
+     */
+    public void getscandata() {
+        final String getstr = "com.android.receive_scan_action";
+        mBrReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(getstr)) {
+                    String datat = intent.getStringExtra("data");
+                    if(userNameText.isFocused()) {
+                        userNameText.setText(datat);
+                    }
+                    nouserText.requestFocus();
+                }
+            };
+        };
+        IntentFilter filter = new IntentFilter(getstr);
+        registerReceiver(mBrReceiver, filter);
+    }
+
 
 }

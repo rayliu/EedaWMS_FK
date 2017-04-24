@@ -15,6 +15,11 @@ import android.widget.ListView;
 
 import com.eeda123.wms.eedawms.model.DbHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ListActivity extends AppCompatActivity {
     public static String page_type;
     @Override
@@ -47,26 +52,33 @@ public class ListActivity extends AppCompatActivity {
         SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
         Cursor cursor = null;
         if("gateIn".equals(page_type)){
-            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in order by id desc", null);
+            cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from gate_in order by id desc", null);
         }else if("gateInReturn".equals(page_type)){
-            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in where return_flag = 'Y' order by id desc", null);
+            cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from gate_in where return_flag = 'Y' order by id desc", null);
         }else if("shiftIn".equals(page_type)){
-            cursor = db.rawQuery("select shelves,part_no,quantity from gate_in where move_flag = 'Y'  order by id desc", null);
+            cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from gate_in where move_flag = 'Y'  order by id desc", null);
         }else if("gateOut".equals(page_type)){
-            cursor = db.rawQuery("select id,part_no,quantity from gate_out order by id desc", null);
+            cursor = db.rawQuery("select id,part_no,quantity,qr_code from gate_out order by id desc", null);
         }else if("shiftOut".equals(page_type)){
-            cursor = db.rawQuery("select id,part_no,quantity from gate_out where move_flag = 'Y' order by id desc", null);
+            cursor = db.rawQuery("select id,part_no,quantity,qr_code from gate_out where move_flag = 'Y' order by id desc", null);
         }else if("invCheck".equals(page_type)){
-            cursor = db.rawQuery("select shelves,part_no,quantity from inv_check_order order by id desc", null);
+            cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from inv_check_order order by id desc", null);
         }else if("invReCheck".equals(page_type)){
-            cursor = db.rawQuery("select shelves,part_no,check_quantity from inv_check_order where check_quantity is not null order by id desc", null);
+            cursor = db.rawQuery("select shelves,part_no,check_quantity,qr_code from inv_check_order where check_quantity is not null order by id desc", null);
         }
 
         String data[] = new String[cursor.getCount()];
         int num = 0;
         if(cursor.moveToFirst()){
             do{
-                data[num] = cursor.getString(0)+"  |  "+cursor.getString(1)+"  |  "+cursor.getString(2);
+                String qr_code = cursor.getString(3);
+                Matcher m= Pattern.compile("[^\\(\\)]+").matcher(qr_code);
+                List<String> list = new ArrayList<String>();
+                while (m.find()) {
+                    list.add(m.group());
+                }
+                String codeId= list.get(0);
+                data[num] = "("+codeId+")"+cursor.getString(0)+" | "+cursor.getString(1)+" | "+cursor.getString(2);
                 num++;
             }while(cursor.moveToNext());
         }

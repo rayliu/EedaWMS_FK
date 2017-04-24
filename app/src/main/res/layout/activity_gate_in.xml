@@ -115,10 +115,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
                 <TextView
                     android:text="数量:"
@@ -135,6 +135,27 @@
                     android:id="@+id/quantity"
                     android:layout_weight="0.60" />
             </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="50dip">
+
+                <TextView
+                    android:text="当前货架出库数量:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView14"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:layout_width="73dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/shelfTotal" />
+            </LinearLayout>
         </LinearLayout>
 
         <Button
@@ -142,14 +163,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/nextShelfBtn"
-            android:layout_marginTop="80dip" />
+            android:layout_marginTop="10dip" />
 
         <Button
             android:text="列表"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/listBtn"
-            android:layout_marginTop="20dip"
+            android:layout_marginTop="10dip"
             android:layout_marginLeft="200dip" />
 
     </LinearLayout>

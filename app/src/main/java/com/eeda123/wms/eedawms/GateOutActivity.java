@@ -134,11 +134,6 @@ public class GateOutActivity extends AppCompatActivity {
                 if (intent.getAction().equals(getstr)) {
                     String datat = intent.getStringExtra("data");
                     Matcher m= Pattern.compile("[^\\(\\)]+").matcher(datat);
-                    if(orderNoText.hasFocus()) {
-                        orderNoText.setText(datat);
-                        qrCodeEditText.requestFocus();
-                        MainActivity.showAlertDialog(context,datat);
-                    }
 
                     if(qrCodeEditText.hasFocus()) {
                         List<String> list = new ArrayList<String>();
@@ -157,6 +152,12 @@ public class GateOutActivity extends AppCompatActivity {
                             MainActivity.showAlertDialog(context,"QR CODE格式无法识别");
                         }
                     };
+
+                    if(orderNoText.hasFocus()) {
+                        orderNoText.setText(datat);
+                        qrCodeEditText.requestFocus();
+                        MainActivity.showAlertDialog(context,datat);
+                    }
                 };
             }
         };

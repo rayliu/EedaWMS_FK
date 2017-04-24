@@ -132,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/listBtn"
-            android:layout_marginTop="200dip"
+            android:layout_marginTop="120dip"
             android:layout_marginLeft="200dip" />
 
     </LinearLayout>

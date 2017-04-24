@@ -26,6 +26,7 @@ public class GateInActivity extends AppCompatActivity {
     private EditText partNoEditText;
     private EditText quantityEditText;
     private EditText shelfEditText;
+    private EditText shelfTotalText;
     public static String USER_NAME;
 
     //private EditText mFocusedEditText;
@@ -60,11 +61,13 @@ public class GateInActivity extends AppCompatActivity {
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
+        shelfTotalText = (EditText) findViewById(R.id.shelfTotal);
         //shelfEditText.setInputType(InputType.TYPE_NULL);
         MainActivity.disableShowSoftInput(shelfEditText);
         MainActivity.disableShowSoftInput(qrCodeEditText);
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
+        MainActivity.disableShowSoftInput(shelfTotalText);
 
         findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,8 +113,21 @@ public class GateInActivity extends AppCompatActivity {
 
         MainActivity.showAlertDialog(context,"入库成功\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                 +quantityEditText.getText());
-        //Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_LONG).show();
+
+        getShelfTotal();
         clearDate();
+    }
+
+
+    public void getShelfTotal(){
+        String shelf = shelfEditText.getText().toString();
+        //统计当前货架总数量
+        DbHelper database_helper = new DbHelper(GateInActivity.this);
+        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+        Cursor cursor2 = db.rawQuery("select count(1) total from gate_in where shelves = '"+shelf+"'", null);
+        while (cursor2.moveToNext()) {
+            shelfTotalText.setText(cursor2.getString(0));
+        }
     }
 
 
@@ -172,13 +188,14 @@ public class GateInActivity extends AppCompatActivity {
                     }
 
                     if(shelfEditText.hasFocus()) {
-//                        if(m.end()>1){
-//                            MainActivity.showAlertDialog(context,"货架格式无法识别");
-//                        }else{
+                        if(datat.length()<7 || datat.length()>12){
+                            MainActivity.showAlertDialog(context,"货架格式无法识别");
+                        }else{
                             shelfEditText.setText(datat);
                             qrCodeEditText.requestFocus();
                             MainActivity.showAlertDialog(context,datat);
-//                        }
+                            getShelfTotal();
+                        }
                     }
                 }
             };
