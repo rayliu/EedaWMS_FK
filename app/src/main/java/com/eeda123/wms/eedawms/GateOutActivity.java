@@ -29,6 +29,7 @@ public class GateOutActivity extends AppCompatActivity {
     private EditText quantityEditText;
     private EditText shelfEditText;
     public static String USER_NAME;
+    private EditText shelfTotalText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +60,14 @@ public class GateOutActivity extends AppCompatActivity {
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
-
+        shelfTotalText = (EditText) findViewById(R.id.shelfTotal);
 
         //MainActivity.disableShowSoftInput(OrderNoText);
         MainActivity.disableShowSoftInput(shelfEditText);
         MainActivity.disableShowSoftInput(qrCodeEditText);
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
+        MainActivity.disableShowSoftInput(shelfTotalText);
         orderNoText.hasFocusable();
 
         findViewById(R.id.listBtn).setOnClickListener(new View.OnClickListener() {
@@ -104,9 +106,20 @@ public class GateOutActivity extends AppCompatActivity {
         MainActivity.showAlertDialog(context,"出库成功!\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                 +quantityEditText.getText());
         clearDate();
+        getShelfTotal();
         //Toast.makeText(getApplicationContext(), "出库成功!", Toast.LENGTH_LONG).show();
     }
 
+    public void getShelfTotal(){
+        String order_no = orderNoText.getText().toString();
+        //统计当前货架总数量
+        DbHelper database_helper = new DbHelper(GateOutActivity.this);
+        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+        Cursor cursor2 = db.rawQuery("select count(1) total from gate_out where order_no = '"+order_no+"' ", null);
+        while (cursor2.moveToNext()) {
+            shelfTotalText.setText(cursor2.getString(0));
+        }
+    }
 
     public void clearDate(){
         qrCodeEditText.setText("");
@@ -157,6 +170,7 @@ public class GateOutActivity extends AppCompatActivity {
                         orderNoText.setText(datat);
                         qrCodeEditText.requestFocus();
                         MainActivity.showAlertDialog(context,datat);
+                        getShelfTotal();
                     }
                 };
             }

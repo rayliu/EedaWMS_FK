@@ -28,6 +28,7 @@ public class GateInReturnActivity extends AppCompatActivity {
     private EditText quantityEditText;
     private EditText shelfEditText;
     public static String USER_NAME;
+    private EditText shelfTotalText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +59,12 @@ public class GateInReturnActivity extends AppCompatActivity {
         partNoEditText = (EditText) findViewById(R.id.part_no);
         quantityEditText = (EditText) findViewById(R.id.quantity);
         shelfEditText = (EditText) findViewById(R.id.shelfEditText);
-
+        shelfTotalText = (EditText) findViewById(R.id.shelfTotal);
         MainActivity.disableShowSoftInput(shelfEditText);
         MainActivity.disableShowSoftInput(qrCodeEditText);
         MainActivity.disableShowSoftInput(quantityEditText);
         MainActivity.disableShowSoftInput(partNoEditText);
+        MainActivity.disableShowSoftInput(shelfTotalText);
 
         findViewById(R.id.nextShelfBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +111,7 @@ public class GateInReturnActivity extends AppCompatActivity {
         MainActivity.showAlertDialog(context,"入库成功\n\n编码："+partNoEditText.getText().toString()+"\n"+"数量："
                 +quantityEditText.getText());
         clearDate();
+        getShelfTotal();
         //Toast.makeText(getApplicationContext(), "入库成功!", Toast.LENGTH_LONG).show();
     }
 
@@ -118,6 +121,17 @@ public class GateInReturnActivity extends AppCompatActivity {
         quantityEditText.setText("");
 
         qrCodeEditText.requestFocus();
+    }
+
+    public void getShelfTotal(){
+        String shelf = shelfEditText.getText().toString();
+        //统计当前货架总数量
+        DbHelper database_helper = new DbHelper(GateInReturnActivity.this);
+        SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
+        Cursor cursor2 = db.rawQuery("select count(1) total from gate_in where shelves = '"+shelf+"' and return_flag='Y'", null);
+        while (cursor2.moveToNext()) {
+            shelfTotalText.setText(cursor2.getString(0));
+        }
     }
 
     private BroadcastReceiver mBrReceiver = new BroadcastReceiver() {
@@ -177,6 +191,7 @@ public class GateInReturnActivity extends AppCompatActivity {
                             shelfEditText.setText(datat);
                             qrCodeEditText.requestFocus();
                             MainActivity.showAlertDialog(context,datat);
+                            getShelfTotal();
                         }
                     }
                 }
