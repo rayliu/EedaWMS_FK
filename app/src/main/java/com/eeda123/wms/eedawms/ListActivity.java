@@ -78,7 +78,7 @@ public class ListActivity extends AppCompatActivity {
                     list.add(m.group());
                 }
                 String codeId= list.get(0);
-                data[num] = "("+codeId+")"+cursor.getString(0)+" | "+cursor.getString(1)+" | "+cursor.getString(2);
+                data[num] = "("+codeId+")part_no："+cursor.getString(1)+" 货架："+cursor.getString(0)+" 数量："+cursor.getString(2);
                 num++;
             }while(cursor.moveToNext());
         }
