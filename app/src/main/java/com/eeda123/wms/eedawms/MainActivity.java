@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         userNameText = (EditText)findViewById(R.id.userName);
         nouserText = (EditText)findViewById(R.id.nouse);
+        userNameText.clearFocus();
+        nouserText.requestFocus();
         addListeners();
     }
 
@@ -184,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // to write process
         protected Boolean doInBackground(final String... args) {
-            boolean success = false;
+            String result = "";
             String currentDateString = new SimpleDateFormat(Constants.SimpleDtFrmt_ddMMyyyy_HHmmss).format(new Date());
 
             File dbFile = getDatabasePath(DbHelper.DB_NAME);
@@ -204,29 +206,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     exportDir.mkdirs();
                 }
 
-                String msg = null;
-                GateInDao gateInDao = new GateInDao(MainActivity.this);
-                success = creatCSV(exportDirStr,"入库记录",gateInDao.getList(),currentDateString);
-                GateOutDao gateOutDao = new GateOutDao(MainActivity.this);
-                success = creatCSV(exportDirStr,"出库记录",gateOutDao.getList(),currentDateString);
-                InvCheckOrderDao invCheckDao = new InvCheckOrderDao(MainActivity.this);
-                success = creatCSV(exportDirStr,"盘点单",invCheckDao.getList(),currentDateString);
-                Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir, Toast.LENGTH_LONG).show();
+
+                String msg = "";
                 DbHelper database_helper = new DbHelper(MainActivity.this);
                 SQLiteDatabase db = database_helper.getWritableDatabase();//这里是获得可写的数据库
-                db.execSQL("delete from gate_in ");
-                db.execSQL("delete from gate_out ");
-                db.execSQL("delete from inv_check_order ");
+                GateInDao gateInDao = new GateInDao(MainActivity.this);
+                result = creatCSV(exportDirStr,"入库记录",gateInDao.getList(),currentDateString);
+                if("success".equals(result)){
+                    db.execSQL("delete from gate_in ");
+                    msg += "导出入库记录成功\n";
+                }else if("fail".equals(result)){
+                    msg += "导出入库记录失败\n";
+                }else if("empty".equals(result)){
+                    msg += "入库记录无数据\n";
+                }
+
+                GateOutDao gateOutDao = new GateOutDao(MainActivity.this);
+                result = creatCSV(exportDirStr,"出库记录",gateOutDao.getList(),currentDateString);
+                if("success".equals(result)){
+                    db.execSQL("delete from gate_out ");
+                    msg += "导出出库记录成功\n";
+                }else if("fail".equals(result)){
+                    msg += "导出出库记录失败\n";
+                }else if("empty".equals(result)){
+                    msg += "出库记录无数据\n";
+                }
+
+                InvCheckOrderDao invCheckDao = new InvCheckOrderDao(MainActivity.this);
+                result = creatCSV(exportDirStr,"盘点单",invCheckDao.getList(),currentDateString);
+                if("success".equals(result)){
+                    db.execSQL("delete from inv_check_order ");
+                    msg += "导出盘点单成功\n";
+                }else if("fail".equals(result)){
+                    msg += "导出盘点单失败\n";
+                }else if("empty".equals(result)){
+                    msg += "盘点单无数据\n";
+                }
+                Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir+"\n"+msg, Toast.LENGTH_LONG).show();
+
                 db.close();
             }
-            return success;
+
+            return true;
         }
 
-        public boolean creatCSV(String exportDir,String order, ArrayList<HashMap<String, ?>> listdata ,String currentDateString){
-            boolean success = false;
+        public String creatCSV(String exportDir,String order, ArrayList<HashMap<String, ?>> listdata ,String currentDateString){
+            String result = "fail";
             try {
-                if(listdata.size() < 1)
-                    return true;
+                if(listdata.size() < 1){
+                    return "empty";
+                }
+
                 File file = new File(exportDir, order + "_" + currentDateString + ".csv");
                 file.createNewFile();
                 CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
@@ -247,14 +277,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         csvWrite.writeNext(arrStr);
                     }
-                    success = true;
+                    result = "success";
                 }
                 csvWrite.close();
             } catch (IOException e) {
                 Log.e("MainActivity", e.getMessage(), e);
-                return success;
+                return result;
             }
-            return success;
+            return result;
         }
 
         // close dialog and give msg

@@ -42,7 +42,7 @@
                 android:layout_weight="0.84"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Ray Liu"
+                android:text="ktwms"
                 android:textSize="14sp" />
 
             <EditText
