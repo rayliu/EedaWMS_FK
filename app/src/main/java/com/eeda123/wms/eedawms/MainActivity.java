@@ -30,8 +30,12 @@ import com.opencsv.CSVWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -192,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             File dbFile = getDatabasePath(DbHelper.DB_NAME);
             Log.v("v", "Db path is: " + dbFile); // get the path of db
             File exportDir = new File(Environment.getExternalStorageDirectory() + File.separator + Constants.FILE_DIR_NM, "");
+            File backupsDir = new File(Environment.getExternalStorageDirectory() + File.separator + "数据备份", "");
 
             long freeBytesInternal = new File(getApplicationContext().getFilesDir().getAbsoluteFile().toString()).getFreeSpace();
             long megAvailable = freeBytesInternal / 1048576;
@@ -204,6 +209,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.v("v", "exportDir path::" + exportDir);
                 if (!exportDir.exists()) {
                     exportDir.mkdirs();
+                }
+                if (!backupsDir.exists()) {
+                    backupsDir.mkdirs();
                 }
 
 
@@ -242,12 +250,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else if("empty".equals(result)){
                     msg += "盘点单无数据\n";
                 }
+                //数据备份
+                try {
+                    copyDirectiory(exportDir.toString(),backupsDir.toString());
+                }catch (Exception e){
+                    e.getMessage();
+                }
                 Toast.makeText(getApplicationContext(), "所有文件已导出："+exportDir+"\n"+msg, Toast.LENGTH_LONG).show();
 
                 db.close();
             }
 
             return true;
+        }
+        //复制文件
+        public void copyFile(File source, File dest)
+                throws IOException {
+            InputStream input = null;
+            OutputStream output = null;
+            try {
+                input = new FileInputStream(source);
+                output = new FileOutputStream(dest);
+                byte[] buf = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = input.read(buf)) > 0) {
+                    output.write(buf, 0, bytesRead);
+                }
+            } finally {
+                input.close();
+                output.close();
+            }
+        }
+
+
+        // 复制文件夹
+        public  void copyDirectiory(String sourceDir, String targetDir)
+                throws IOException {
+            // 新建目标目录
+            (new File(targetDir)).mkdirs();
+            // 获取源文件夹当前下的文件或目录
+            File[] file = (new File(sourceDir)).listFiles();
+            for (int i = 0; i < file.length; i++) {
+                if (file[i].isFile()) {
+                    // 源文件
+                    File sourceFile=file[i];
+                    // 目标文件
+                    File targetFile=new File(new File(targetDir).getAbsolutePath()+File.separator+file[i].getName());
+                    copyFile(sourceFile,targetFile);
+                }
+                if (file[i].isDirectory()) {
+                    // 准备复制的源文件夹
+                    String dir1=sourceDir + "/" + file[i].getName();
+                    // 准备复制的目标文件夹
+                    String dir2=targetDir + "/"+ file[i].getName();
+                    copyDirectiory(dir1, dir2);
+                }
+            }
         }
 
         public String creatCSV(String exportDir,String order, ArrayList<HashMap<String, ?>> listdata ,String currentDateString){
