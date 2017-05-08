@@ -58,9 +58,9 @@ public class ListActivity extends AppCompatActivity {
         }else if("shiftIn".equals(page_type)){
             cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from gate_in where move_flag = 'Y'  order by id desc", null);
         }else if("gateOut".equals(page_type)){
-            cursor = db.rawQuery("select id,part_no,quantity,qr_code from gate_out order by id desc", null);
+            cursor = db.rawQuery("select order_no,part_no,quantity,qr_code from gate_out order by id desc", null);
         }else if("shiftOut".equals(page_type)){
-            cursor = db.rawQuery("select id,part_no,quantity,qr_code from gate_out where move_flag = 'Y' order by id desc", null);
+            cursor = db.rawQuery("select order_no,part_no,quantity,qr_code from gate_out where move_flag = 'Y' order by id desc", null);
         }else if("invCheck".equals(page_type)){
             cursor = db.rawQuery("select shelves,part_no,quantity,qr_code from inv_check_order order by id desc", null);
         }else if("invReCheck".equals(page_type)){
@@ -78,7 +78,12 @@ public class ListActivity extends AppCompatActivity {
                     list.add(m.group());
                 }
                 String codeId= list.get(0);
-                data[num] = "("+codeId+")part_no："+cursor.getString(1)+" 货架："+cursor.getString(0)+" 数量："+cursor.getString(2);
+                if("gateOut".equals(page_type)){
+                    data[num] = "("+codeId+")part_no："+cursor.getString(1)+" 单号："+cursor.getString(0)+" 数量："+cursor.getString(2);
+                }else{
+                    data[num] = "("+codeId+")part_no："+cursor.getString(1)+" 货架："+cursor.getString(0)+" 数量："+cursor.getString(2);
+                }
+
                 num++;
             }while(cursor.moveToNext());
         }
